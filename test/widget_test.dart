@@ -39,6 +39,7 @@ void main() {
 
   test('question generators produce unique content across a long sample', () {
     final generators = <Q Function(int)>[
+      generateTwentyQuestion,
       generateTriviaQuestion,
       generateWhoQuestion,
       generateRiddleQuestion,

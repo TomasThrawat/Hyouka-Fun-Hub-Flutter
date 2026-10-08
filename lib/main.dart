@@ -669,60 +669,12 @@ class CompareGame extends StatelessWidget{
   @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'الأكبر؟',generator:generateCompareQuestion);
 }
 
-class TwentyQ extends StatefulWidget {
+
+class TwentyQ extends StatelessWidget {
   const TwentyQ({super.key});
-  @override State<TwentyQ> createState()=>_TwentyQState();
-}
-class _TwentyQState extends State<TwentyQ>{
-  final rounds=const[
-    ['هل هي كائن حي؟','هل تتحرك؟','هل يمكن الإمساك بها؟','هل تستخدم يوميًا؟','هل توجد في المنزل؟','هل تحتاج طاقة؟','هل ترتبط بالتقنية؟','هل يمكن حملها؟'],
-    ['هل هي لعبة؟','هل تحتاج لاعبًا؟','هل لها قواعد؟','هل تستخدم ألوانًا؟','هل تلعب فرديًا؟','هل تعتمد على السرعة؟','هل فيها نقاط؟','هل يمكن تعلمها بسرعة؟'],
-    ['هل هي وسيلة نقل؟','هل تتحرك على طريق؟','هل لها عجلات؟','هل تستخدم وقودًا؟','هل تتسع لأكثر من شخص؟','هل لها مقود؟','هل تستخدم داخل مدينة؟','هل تناسب رحلة طويلة؟'],
-  ];
-  int round=0,index=0,yes=0;
-  void answer(bool value){setState((){if(value)yes++;index++;if(index==rounds[round].length){round=(round+1)%rounds.length;index=0;yes=0;}});}
-  @override Widget build(BuildContext context){final q=rounds[round];return Center(child:Padding(padding:const EdgeInsets.all(22),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[
-    Text('السؤال '+(index+1).toString()+'/'+q.length.toString(),style:const TextStyle(color:Colors.white,fontSize:28,fontWeight:FontWeight.w900)),
-    const SizedBox(height:18),Text(q[index],textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:22)),
-    const SizedBox(height:10),Text('إجابات نعم: '+yes.toString(),style:const TextStyle(color:Colors.white)),const SizedBox(height:22),
-    Row(children:[Expanded(child:FilledButton(onPressed:()=>answer(true),child:const Text('نعم'))),const SizedBox(width:10),Expanded(child:FilledButton.tonal(onPressed:()=>answer(false),child:const Text('لا')))]),
-  ])));}}
-
-class ClueGame extends StatelessWidget {
-  const ClueGame({super.key});
-  @override Widget build(BuildContext context)=>const EndlessQuestionGame(title:'خمن الشخصية',generator:generateClueQuestion);
-}
-
-
-class RatherGame extends StatefulWidget{
-  const RatherGame({super.key});
-  @override State<RatherGame> createState()=>_RatherState();
-}
-class _RatherState extends State<RatherGame>{
-  final used=<String>{};
-  var serial=0;
-  late Q current;
-  bool chosen=false;
-  Q _nextUnique(){
-    for(var attempt=0;attempt<1000;attempt++){
-      final q=generateRatherQuestion(serial++);
-      if(used.add(q.key))return q;
-    }
-    throw StateError('تعذر توليد اختيار جديد فريد');
-  }
-  @override void initState(){super.initState();current=_nextUnique();}
-  void choose(int value){if(chosen)return;setState(()=>chosen=true);}
-  void next()=>setState((){current=_nextUnique();chosen=false;});
-  @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[
-    Text('الجولة ' + _arNumber(used.length),style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),
-    const SizedBox(height:12),
-    Text(current.text,style:const TextStyle(color:Colors.white,fontSize:30,fontWeight:FontWeight.w900)),
-    const SizedBox(height:22),
-    ...List.generate(current.options.length,(i)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SizedBox(width:double.infinity,child:FilledButton.tonal(onPressed:chosen?null:()=>choose(i),child:Text(current.options[i],textAlign:TextAlign.center))))),
-    if(chosen)const Text('اختيارك محفوظ للجولة',style:TextStyle(color:Colors.white)),
-    const SizedBox(height:14),
-    FilledButton(onPressed:chosen?next:null,child:const Text('ماذا بعد؟')),
-  ]));
+  @override
+  Widget build(BuildContext context) =>
+      const EndlessQuestionGame(title:'أسئلة العشرين',generator:generateTwentyQuestion);
 }
 
 class WordGame extends StatefulWidget{
