@@ -84,7 +84,7 @@ void main() {
 
   testWidgets('question game exposes title, scoring, difficulty, pause/resume, and answer flow', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         theme: ThemeData.dark(),
         home: Scaffold(
           body: EndlessQuestionGame(

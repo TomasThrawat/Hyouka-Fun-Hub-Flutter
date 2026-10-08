@@ -441,13 +441,13 @@ class _BattleState extends State<BattleGame> {
 
   Q _nextUnique() {
     for (var attempt = 0; attempt < 5000; attempt++) {
-      final generator = _questionGenerators[
-        pickIndex(serial + attempt, 777, _questionGenerators.length)
+      final generator = questionGenerators[
+        pickIndex(serial + attempt, 777, questionGenerators.length)
       ];
       final q = generator(serial * 17 + attempt);
       serial++;
       if (used.add(q.key)) {
-        return q.withDifficulty(_difficultyForQuestion(questionNumber));
+        return q.withDifficulty(difficultyForQuestion(questionNumber));
       }
     }
     throw StateError('تعذر توليد سؤال معركة فريد');
@@ -764,7 +764,7 @@ class _TetrisState extends State<TetrisGame>{
   @override Widget build(BuildContext context)=>Column(children:[
     Expanded(child:Center(child:AspectRatio(aspectRatio:columns/rows,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:columns),itemCount:cells.length,itemBuilder:(_,i){final cx=i%columns,cy=i~/columns;return Container(margin:const EdgeInsets.all(1),color:(cx==x&&cy==y)||cells[i]!=0?const Color(0xFF444444):const Color(0xFF111111));})))),
     Text('النقاط: $score',style:const TextStyle(color:Colors.white)),Row(mainAxisAlignment:MainAxisAlignment.center,children:[
-      IconButton(onPressed:()=>setState(()=>x=max(0,x-1)),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:fall,icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:()=>setState(()=>x=min(columns-1,x+1)),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh)),
+      IconButton(onPressed:()=>setState(()=>x=max(0,x-1)),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:fall,icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:()=>setState(()=>x=min(columns-1,x+1).toInt()),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh)),
     ]),
   ]);
 }
@@ -1010,8 +1010,8 @@ class _BossState extends State<BossGame>{
     });
   }
   @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.all(20),child:Column(children:[
-    Text('طاقة الزعيم: ' + _arNumber(hp),style:const TextStyle(color:Colors.white,fontSize:28,fontWeight:FontWeight.w900)),
-    Text('الزعماء المهزومون: ' + _arNumber(defeated) + ' • السؤال ' + _arNumber(questionNumber),style:const TextStyle(color:Colors.white)),
+    Text('طاقة الزعيم: ' + arNumber(hp),style:const TextStyle(color:Colors.white,fontSize:28,fontWeight:FontWeight.w900)),
+    Text('الزعماء المهزومون: ' + arNumber(defeated) + ' • السؤال ' + arNumber(questionNumber),style:const TextStyle(color:Colors.white)),
     const SizedBox(height:14),
     Text(current.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:22)),
     const Spacer(),

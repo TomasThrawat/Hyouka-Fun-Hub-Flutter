@@ -49,14 +49,14 @@ String _dayKey(DateTime date) =>
     date.month.toString().padLeft(2, '0') +
     date.day.toString().padLeft(2, '0');
 
-QuestionDifficulty _difficultyForQuestion(int questionNumber) {
+QuestionDifficulty difficultyForQuestion(int questionNumber) {
   if (questionNumber <= 3) return QuestionDifficulty.easy;
   if (questionNumber <= 7) return QuestionDifficulty.medium;
   if (questionNumber <= 14) return QuestionDifficulty.hard;
   return QuestionDifficulty.expert;
 }
 
-final _questionGenerators = <Q Function(int)>[
+final questionGenerators = <Q Function(int)>[
   generateTriviaQuestion,
   generateWhoQuestion,
   generateRiddleQuestion,
@@ -106,7 +106,7 @@ class _EndlessQuestionGameState extends State<EndlessQuestionGame> {
       final seed = widget.seedOffset + serial++;
       final q = widget.generator(seed);
       if (used.add(q.key)) {
-        return q.withDifficulty(_difficultyForQuestion(questionNumber));
+        return q.withDifficulty(difficultyForQuestion(questionNumber));
       }
     }
     throw StateError('تعذر توليد سؤال جديد فريد');
@@ -122,7 +122,7 @@ class _EndlessQuestionGameState extends State<EndlessQuestionGame> {
   void answer(int option) {
     if (paused || picked != null) return;
     final correct = option == current.answer;
-    final earned = questionBasePoints(current.difficulty) + min(15, (streak + 1) * 2);
+    final earned = questionBasePoints(current.difficulty) + min(15, (streak + 1) * 2).toInt();
     setState(() {
       picked = option;
       if (correct) {
@@ -322,6 +322,28 @@ class TwentyQ extends StatelessWidget {
     gameId: '20q', title: 'أسئلة العشرين', generator: generateTwentyQuestion);
 }
 
+class ClueGame extends StatelessWidget {
+  const ClueGame({super.key});
+
+  @override
+  Widget build(BuildContext context) => const EndlessQuestionGame(
+    gameId: 'character',
+    title: 'خمن الشخصية',
+    generator: generateClueQuestion,
+  );
+}
+
+class RatherGame extends StatelessWidget {
+  const RatherGame({super.key});
+
+  @override
+  Widget build(BuildContext context) => const EndlessQuestionGame(
+    gameId: 'rather',
+    title: 'ماذا تفضل؟',
+    generator: generateRatherQuestion,
+  );
+}
+
 class DailyChallengePage extends StatelessWidget {
   const DailyChallengePage({super.key});
 
@@ -329,8 +351,8 @@ class DailyChallengePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final today = DateTime.now();
     final daySeed = today.year * 10000 + today.month * 100 + today.day;
-    final generator = _questionGenerators[
-      pickIndex(daySeed, 707, _questionGenerators.length)
+    final generator = questionGenerators[
+      pickIndex(daySeed, 707, questionGenerators.length)
     ];
     return Scaffold(
       appBar: AppBar(
