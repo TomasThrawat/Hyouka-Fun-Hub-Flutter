@@ -28,9 +28,33 @@ void main() {
     expect(find.text('الثعبان'), findsOneWidget);
     expect(find.text('2048'), findsOneWidget);
 
-    await tester.tap(find.text('الأسئلة'));
+    await tester.enterText(search, 'الحساب السريع');
     await tester.pump();
     expect(find.text('الحساب السريع'), findsOneWidget);
+
+    await tester.enterText(search, 'نمط الأرقام');
+    await tester.pump();
     expect(find.text('نمط الأرقام'), findsOneWidget);
+  });
+
+  test('question generators produce unique content across a long sample', () {
+    final generators = <Q Function(int)>[
+      generateTriviaQuestion,
+      generateWhoQuestion,
+      generateRiddleQuestion,
+      generateAnimeQuestion,
+      generateImpossibleQuestion,
+      generateMathQuestion,
+      generateSequenceQuestion,
+      generateTrueFalseQuestion,
+      generateCompareQuestion,
+    ];
+
+    for (final generator in generators) {
+      final keys = <String>{};
+      for (var seed = 0; seed < 500; seed++) {
+        expect(keys.add(generator(seed).key), isTrue);
+      }
+    }
   });
 }
