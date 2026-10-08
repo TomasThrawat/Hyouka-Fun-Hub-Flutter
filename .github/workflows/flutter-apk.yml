@@ -12,6 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Git default branch
+        run: git config --global init.defaultBranch main
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up Flutter
@@ -21,8 +23,6 @@ jobs:
           cache: true
       - name: Flutter version
         run: flutter --version
-      - name: Configure Git default branch
-        run: git config --global init.defaultBranch main
       - name: Generate Android platform
         run: flutter create --platforms=android --project-name hyouka_fun_hub .
       - name: Pub get
