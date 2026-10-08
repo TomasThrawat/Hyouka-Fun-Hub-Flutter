@@ -484,13 +484,13 @@ class _BattleState extends State<BattleGame> {
   void answer(int option) {
     if (gameOver || paused || picked != null) return;
     final correct = option == current.answer;
-    final earned = questionBasePoints(current.difficulty) + min(20, (combo + 1) * 2);
+    final earned = questionBasePoints(current.difficulty) + min(20, (combo + 1) * 2).toInt();
     setState(() {
       picked = option;
       if (correct) {
         combo++;
         correctCount++;
-        bestCombo = max(bestCombo, combo);
+        bestCombo = max(bestCombo, combo).toInt();
         score += earned;
       } else {
         combo = 0;
@@ -913,7 +913,7 @@ class _TypingState extends State<TypingGame>{
   final prompts=const['البرمجة تجعل الأفكار ألعابًا ممتعة.','الألعاب الصغيرة تحتاج تركيزًا وسرعة.','كل جولة تمنحك تحديًا عربيًا جديدًا.','اكتب بدقة قبل زيادة السرعة.'];
   int index=0;DateTime?start;String message='اكتب الجملة كما تظهر';
   @override void dispose(){controller.dispose();super.dispose();}
-  void check(){start??=DateTime.now();if(controller.text==prompts[index]){final ms=max(1,DateTime.now().difference(start!).inMilliseconds);setState((){message='أنهيتها خلال '+(ms/1000).toStringAsFixed(2)+' ثانية';index=(index+1)%prompts.length;controller.clear();start=null;});}}
+  void check(){start??=DateTime.now();if(controller.text==prompts[index]){final ms=max(1,DateTime.now().difference(start!).inMilliseconds).toInt();setState((){message='أنهيتها خلال '+(ms/1000).toStringAsFixed(2)+' ثانية';index=(index+1)%prompts.length;controller.clear();start=null;});}}
   @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.all(18),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[
     Text(prompts[index],textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:23,fontWeight:FontWeight.w900)),const SizedBox(height:18),
     TextField(controller:controller,onChanged:(_)=>check(),maxLines:3,textDirection:TextDirection.rtl),const SizedBox(height:12),Text(message,style:const TextStyle(color:Colors.white)),
@@ -1085,7 +1085,7 @@ class _BossState extends State<BossGame>{
   void next(){
     final damage=picked==current.answer?25:8;
     setState((){
-      hp=max(0,hp-damage);
+      hp=max(0,hp-damage).toInt();
       if(hp==0){defeated++;hp=100;}
       current=_nextUnique();
       picked=null;
