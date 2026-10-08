@@ -25,6 +25,10 @@ jobs:
         run: flutter create --platforms=android --project-name hyouka_fun_hub .
       - name: Pub get
         run: flutter pub get
+      - name: Apply Dart fixes
+        run: dart fix --apply
+      - name: Format Dart
+        run: dart format --output=write lib test
       - name: Analyze
         run: flutter analyze
       - name: Test
