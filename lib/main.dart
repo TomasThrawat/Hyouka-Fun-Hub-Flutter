@@ -438,7 +438,7 @@ class BattleGame extends StatefulWidget{
 class _BattleState extends State<BattleGame>{
   final random=Random();late List<Q> deck;Timer?timer;
   int sec=30,score=0,combo=0,index=0;int?picked;
-  @override void initState(){super.initState();deck=List<Q>.from(trivia)..shuffle(random);timer=Timer.periodic(const Duration(seconds:1),tick);}
+  @override void initState(){super.initState();deck=List<Q>.from(trivia)..shuffle(random);timer=Timer.periodic(const Duration(seconds:1),(_)=>tick());}
   @override void dispose(){timer?.cancel();super.dispose();}
   void tick(){if(!mounted)return;setState((){sec--;if(sec<=0){sec=30;index=(index+1)%deck.length;picked=null;combo=0;}});}
   void answer(int n){final q=deck[index];setState((){picked=n;if(n==q.answer){combo++;score+=10+combo;}else{combo=0;}});}
@@ -721,7 +721,7 @@ class _RunnerState extends State<RunnerGame>{
 class MazeGame extends StatefulWidget{const MazeGame({super.key});@override State<MazeGame>createState()=>_MazeState();}
 class _MazeState extends State<MazeGame>{
   Point<int>p=const Point(0,0);
-  final layouts=const[
+  final layouts=<Set<Point<int>>>[
     {Point(1,0),Point(1,1),Point(3,2),Point(3,3)},
     {Point(2,0),Point(2,1),Point(1,3),Point(3,3)},
     {Point(1,1),Point(1,2),Point(3,1),Point(3,2)},
