@@ -752,22 +752,120 @@ class _Game2048State extends State<Game2048>{
   ]);
 }
 
-class TetrisGame extends StatefulWidget{
+class TetrisGame extends StatefulWidget {
   const TetrisGame({super.key});
-  @override State<TetrisGame>createState()=>_TetrisState();
+  @override
+  State<TetrisGame> createState() => _TetrisState();
 }
-class _TetrisState extends State<TetrisGame>{
-  static const columns=8,rows=16;Timer?timer;int x=3,y=0,score=0;List<int>cells=List.filled(columns*rows,0);
-  @override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:450),(_)=>fall());}
-  @override void dispose(){timer?.cancel();super.dispose();}
-  void fall(){if(!mounted)return;if(y<rows-1){setState(()=>y++);}else{setState((){cells[(rows-1)*columns+x]=1;y=0;score++;if(cells.every((v)=>v!=0))cells=List.filled(columns*rows,0);});}}
-  void reset(){setState((){cells=List.filled(columns*rows,0);x=3;y=0;score=0;});}
-  @override Widget build(BuildContext context)=>Column(children:[
-    Expanded(child:Center(child:AspectRatio(aspectRatio:columns/rows,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:columns),itemCount:cells.length,itemBuilder:(_,i){final cx=i%columns,cy=i~/columns;return Container(margin:const EdgeInsets.all(1),color:(cx==x&&cy==y)||cells[i]!=0?const Color(0xFF444444):const Color(0xFF111111));})))),
-    Text('النقاط: $score',style:const TextStyle(color:Colors.white)),Row(mainAxisAlignment:MainAxisAlignment.center,children:[
-      IconButton(onPressed:()=>setState(()=>x=max(0,x-1).toInt()),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:fall,icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:()=>setState(()=>x=min(columns-1,x+1).toInt()),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh)),
-    ]),
-  ]);
+
+class _TetrisState extends State<TetrisGame> {
+  static const int columns = 8;
+  static const int rows = 16;
+
+  Timer? timer;
+  int x = 3;
+  int y = 0;
+  int score = 0;
+  List<int> cells = List<int>.filled(columns * rows, 0);
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(
+      const Duration(milliseconds: 450),
+      (_) => fall(),
+    );
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void fall() {
+    if (!mounted) return;
+    if (y < rows - 1) {
+      setState(() {
+        y += 1;
+      });
+      return;
+    }
+    setState(() {
+      cells[(rows - 1) * columns + x] = 1;
+      y = 0;
+      score += 1;
+      if (cells.every((value) => value != 0)) {
+        cells = List<int>.filled(columns * rows, 0);
+      }
+    });
+  }
+
+  void reset() {
+    setState(() {
+      cells = List<int>.filled(columns * rows, 0);
+      x = 3;
+      y = 0;
+      score = 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      Expanded(
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: columns.toDouble() / rows.toDouble(),
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+              ),
+              itemCount: cells.length,
+              itemBuilder: (_, index) {
+                final int cx = index % columns;
+                final int cy = index ~/ columns;
+                final bool active = cx == x && cy == y;
+                return Container(
+                  margin: const EdgeInsets.all(1),
+                  color: active || cells[index] != 0
+                      ? const Color(0xFF444444)
+                      : const Color(0xFF111111),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      Text('النقاط: $score', style: const TextStyle(color: Colors.white)),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () => setState(() {
+              if (x > 0) x -= 1;
+            }),
+            icon: const Icon(Icons.keyboard_arrow_left),
+          ),
+          IconButton(
+            onPressed: fall,
+            icon: const Icon(Icons.keyboard_arrow_down),
+          ),
+          IconButton(
+            onPressed: () => setState(() {
+              if (x < columns - 1) x += 1;
+            }),
+            icon: const Icon(Icons.keyboard_arrow_right),
+          ),
+          IconButton(
+            onPressed: reset,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 class MinesGame extends StatefulWidget{
