@@ -762,26 +762,10 @@ class _TetrisState extends State<TetrisGame> {
   static const int columns = 8;
   static const int rows = 16;
 
-  Timer? timer;
   int x = 3;
   int y = 0;
   int score = 0;
   List<int> cells = List<int>.filled(columns * rows, 0);
-
-  @override
-  void initState() {
-    super.initState();
-    timer = Timer.periodic(
-      const Duration(milliseconds: 450),
-      (_) => fall(),
-    );
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
 
   void fall() {
     if (!mounted) return;
