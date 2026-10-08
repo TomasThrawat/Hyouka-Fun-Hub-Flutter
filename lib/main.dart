@@ -174,17 +174,30 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
             child: Card(
               color: const Color(0xFF111111),
-              child: Padding(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                child: Wrap(
-                  alignment: WrapAlignment.spaceAround,
-                  spacing: 14,
-                  runSpacing: 5,
+                child: Row(
                   children: [
-                    Text('الألعاب '+arNumber(games.length), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
-                    Text('الإجابات '+arNumber(stats.totalAnswered), style: const TextStyle(color: Colors.white)),
-                    Text('أفضل سلسلة '+arNumber(stats.bestStreak), style: const TextStyle(color: Colors.white)),
-                    Text('تحدي يومي '+arNumber(stats.dailyStreak), style: const TextStyle(color: Colors.white)),
+                    Text(
+                      'الألعاب ' + arNumber(games.length),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(width: 18),
+                    Text(
+                      'الإجابات ' + arNumber(stats.totalAnswered),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(width: 18),
+                    Text(
+                      'أفضل سلسلة ' + arNumber(stats.bestStreak),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(width: 18),
+                    Text(
+                      'تحدي يومي ' + arNumber(stats.dailyStreak),
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ],
                 ),
               ),
