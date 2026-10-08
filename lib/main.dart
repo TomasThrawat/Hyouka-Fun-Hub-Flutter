@@ -286,6 +286,7 @@ final Map<String, Widget Function()> _gameBuilders = <String, Widget Function()>
   'detective': () => const DetectiveGame(),
   'battle': () => const BattleGame(),
   'memory': () => const MemoryGame(),
+  'dungeon': () => const DungeonGame(),
   'snake': () => const SnakeGame(),
   '2048': () => const Game2048(),
   'tetris': () => const TetrisGame(),
