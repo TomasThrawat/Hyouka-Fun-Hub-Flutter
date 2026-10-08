@@ -171,7 +171,7 @@ class _EndlessQuestionGameState extends State<EndlessQuestionGame> {
   @override
   Widget build(BuildContext context) {
     final stats = GameStatsStore.instance;
-    final earned = questionBasePoints(current.difficulty) + min(15, (streak + 1) * 2);
+    final earned = questionBasePoints(current.difficulty) + min(15, (streak + 1) * 2).toInt();
     return Padding(
       padding: const EdgeInsets.all(18),
       child: Column(
