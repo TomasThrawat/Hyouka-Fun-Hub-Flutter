@@ -6,7 +6,7 @@ void main() {
   testWidgets('hub loads, searches, and filters games', (tester) async {
     await tester.pumpWidget(const HyoukaFunHub());
 
-    expect(games, hasLength(35));
+    expect(games, hasLength(39));
     expect(find.text('مركز هيوكا للألعاب'), findsOneWidget);
     expect(find.text('أسئلة العشرين'), findsOneWidget);
 
@@ -27,5 +27,10 @@ void main() {
     await tester.pump();
     expect(find.text('الثعبان'), findsOneWidget);
     expect(find.text('2048'), findsOneWidget);
+
+    await tester.tap(find.text('الأسئلة'));
+    await tester.pump();
+    expect(find.text('الحساب السريع'), findsOneWidget);
+    expect(find.text('نمط الأرقام'), findsOneWidget);
   });
 }

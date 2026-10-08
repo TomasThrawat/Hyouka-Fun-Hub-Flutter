@@ -43,6 +43,10 @@ const games = <Game>[
   Game('challenge','التحدي العشوائي','مهام جديدة بلا تكرار فوري','غريب',Icons.casino),
   Game('anime','مسابقة الأنمي','أسئلة أنمي متجددة','غريب',Icons.movie_filter),
   Game('impossible','المسابقة الخادعة','ألغاز خادعة متغيرة','غريب',Icons.report_problem),
+  Game('math','الحساب السريع','مسائل جديدة بلا توقف','الأسئلة',Icons.calculate),
+  Game('sequence','نمط الأرقام','تسلسلات جديدة بلا تكرار','الأسئلة',Icons.timeline),
+  Game('truefalse','صح أم غلط','عبارات جديدة في كل سؤال','الأسئلة',Icons.fact_check),
+  Game('compare','الأكبر؟','مقارنات رقمية بلا نهاية','الأسئلة',Icons.compare),
   Game('terminal','المحطة الوهمية','محاكاة عربية آمنة','غريب',Icons.terminal),
   Game('escape','غرفة الهروب','رموز مختلفة باستمرار','غريب',Icons.lock_open),
   Game('boss','زعيم الأسئلة','زعيم جديد بعد كل هزيمة','غريب',Icons.shield),
@@ -192,6 +196,10 @@ class GameRouter extends StatelessWidget {
       case 'mystery': return const MysteryGame();
       case 'anime': return const AnimeGame();
       case 'impossible': return const ImpossibleGame();
+      case 'math': return const MathQuizGame();
+      case 'sequence': return const SequenceGame();
+      case 'truefalse': return const TrueFalseGame();
+      case 'compare': return const CompareGame();
       case 'terminal': return const FakeTerminalGame();
       case 'escape': return const EscapeGame();
       case 'boss': return const BossGame();
@@ -200,95 +208,466 @@ class GameRouter extends StatelessWidget {
   }
 }
 
-class Q { final String text; final List<String> options; final int answer; const Q(this.text,this.options,this.answer); }
-const trivia=[
-Q('ما لغة برمجة فلاتر؟',['دارت','كوتلن','سويفت','جافا'],0),
-Q('ماذا تعني وحدة معالجة الرسومات؟',['وحدة طاقة الألعاب','وحدة معالجة الرسومات','أداة البرامج العامة','مستخدم البكسل'],1),
-Q('كم بت في البايت الواحد؟',['أربعة','ثمانية','ستة عشر','اثنان وثلاثون'],1),
-Q('ما أكبر محيط على الأرض؟',['الأطلسي','الهندي','الهادئ','المتجمد الشمالي'],2),
-Q('ما ناتج 12 × 8؟',['86','96','108','118'],1),
-Q('كم عدد الكواكب في النظام الشمسي؟',['سبعة','ثمانية','تسعة','عشرة'],1),
-Q('ما الغاز الأكثر وفرة في الغلاف الجوي؟',['الأكسجين','النيتروجين','الهيدروجين','ثاني أكسيد الكربون'],1),
-Q('ما العملية التي تحول الماء إلى بخار؟',['التجمد','التبخر','التكاثف','الترسيب'],1),
-];
-const anime=[
-Q('من صاحب القبعة القشية؟',['لوفي','ليفاي','لايت','تانجيرو'],0),
-Q('أي عمل يرتبط بدفتر قاتل؟',['بليتش','مذكرة الموت','هايكيو','د. ستون'],1),
-Q('أي قرية ينتمي إليها ناروتو؟',['الورق المخفي','الضباب المخفي','الرمال المخفية','السحب المخفية'],0),
-Q('من بطل قاتل الشياطين؟',['تانجيرو','لوفي','باكوجو','غوجو'],0),
-Q('من يستخدم قوة العمالقة في هجوم العمالقة؟',['إيرين','زينيتسو','كاكاشي','غون'],0),
-];
-const who=[
-Q('شخصية صفراء كهربائية ومحبوبة؟',['بيكاتشو','سونيك','كيربي','ماريو'],0),
-Q('يريد أن يصبح هوكاجي؟',['ناروتو','غوكو','لوفي','سايتاما'],0),
-Q('قنفذ أزرق سريع جدًا؟',['سونيك','لينك','ماريو','كيربي'],0),
-Q('بطل يستخدم سيفًا أسود في عالم صائدي الشياطين؟',['تانجيرو','إدوارد','غون','غوكو'],0),
-Q('شخصية تنتمي إلى عالم السوبر ماريو؟',['ماريو','غوجو','إيرين','ليفاي'],0),
-];
-const riddles=[
-Q('ما الذي له مفاتيح ولا يفتح الأقفال؟',['البيانو','الخريطة','الحذاء','السحابة'],0),
-Q('ما الذي يزداد بللًا كلما جفف غيره؟',['المنشفة','الطريق','الهاتف','الظل'],0),
-Q('ما الذي له أسنان كثيرة ولا يعض؟',['المشط','القرش','السحاب','القطة'],0),
-Q('ما الذي يسمع بلا أذن ويتكلم بلا لسان؟',['الصدى','الكتاب','الريح','الباب'],0),
-Q('ما الشيء الذي يزداد كلما شاركته؟',['المعرفة','الظل','الصندوق','المفتاح'],0),
-];
-const impossible=[
-Q('لديك عود ثقاب واحد، ماذا تشعل أولًا؟',['الشمعة','عود الثقاب','المصباح','الغرفة'],1),
-Q('ما الذي يمكن كسره دون لمسه؟',['الوعد','الزجاج','الحائط','الهاتف'],0),
-Q('ما الذي يسافر حول العالم وهو في زاوية؟',['الطابع','السيارة','السحابة','الساعة'],0),
-Q('ما الشيء الذي كلما أخذت منه كبر؟',['الحفرة','الصندوق','الطريق','الباب'],0),
-Q('رجل خرج تحت المطر ولم يبتل شعره، لماذا؟',['كان أصلعًا','كان داخل سيارة','كان في البيت','لم تمطر'],0),
+
+class Q {
+  final String text;
+  final List<String> options;
+  final int answer;
+  const Q(this.text, this.options, this.answer);
+  String get key => text + '|' + (options.toSet().toList()..sort()).join('|');
+}
+
+class CharacterInfo {
+  final String name, universe, role, trait;
+  const CharacterInfo(this.name, this.universe, this.role, this.trait);
+}
+
+const characterPool = <CharacterInfo>[
+  CharacterInfo('ماريو','Super Mario','يخوض مغامرات لإنقاذ الأميرة','يرتبط بالقبعة الحمراء'),
+  CharacterInfo('لويجي','Super Mario','يساعد شقيقه في المغامرات','يرتبط بالقبعة الخضراء'),
+  CharacterInfo('لينك','The Legend of Zelda','بطل هيرول','يستخدم السيف والقوس'),
+  CharacterInfo('سونك','Sonic the Hedgehog','قنفذ سريع ينقذ أصدقاءه','يرتبط باللون الأزرق'),
+  CharacterInfo('كيربي','Kirby','يستخدم قدرته على ابتلاع الأعداء','يرتبط باللون الوردي'),
+  CharacterInfo('بيكاتشو','Pokémon','يستخدم هجمات كهربائية','يرتبط باللون الأصفر'),
+  CharacterInfo('ناروتو','Naruto','يسعى ليصبح هوكاجي','يستخدم تقنيات النينجا'),
+  CharacterInfo('غوكو','Dragon Ball','محارب سايان يحب القتال','يستخدم الكي والتحولات'),
+  CharacterInfo('لوفي','One Piece','يقود طاقم قبعة القش','يبحث عن كنز ون بيس'),
+  CharacterInfo('زورو','One Piece','مبارز في طاقم قبعة القش','يستخدم ثلاثة سيوف'),
+  CharacterInfo('تانجيرو','Demon Slayer','يصطاد الشياطين ويحمي أخته','يستخدم تنفس الماء'),
+  CharacterInfo('نيزوكو','Demon Slayer','تحاول مقاومة رغبة الدماء','هي أخت تانجيرو'),
+  CharacterInfo('إيرين','Attack on Titan','يقاتل العمالقة ويحمي أصدقاءه','يرتبط بقوة العمالقة'),
+  CharacterInfo('ليفاي','Attack on Titan','جندي نخبة يقاتل العمالقة','يشتهر بالمهارة في القتال'),
+  CharacterInfo('غوجو','Jujutsu Kaisen','مدرس ساحر قوي','يرتبط بتقنية اللانهاية'),
+  CharacterInfo('إيتشيغو','Bleach','بديل لحاصد أرواح','يحمل سيف زانباكتو'),
+  CharacterInfo('لايت','Death Note','طالب يستخدم دفتر الموت','يحاول تغيير العالم بطريقته'),
+  CharacterInfo('إدوارد','Fullmetal Alchemist','كيميائي دولة في رحلة بحث','يستخدم الكيمياء'),
+  CharacterInfo('غون','Hunter x Hunter','صياد شاب يبحث عن والده','يحب المغامرة والاستكشاف'),
+  CharacterInfo('ديكو','My Hero Academia','بطل متدرب في أكاديمية الأبطال','يرتبط بقوة One For All'),
+  CharacterInfo('سايتاما','One Punch Man','بطل يهزم أعداءه بلكمة واحدة','أصلع ويرتدي بدلة صفراء'),
+  CharacterInfo('أش','Pokémon','مدرب بوكيمون ومسافر','يسافر مع بيكاتشو'),
+  CharacterInfo('تشوبر','One Piece','طبيب طاقم قبعة القش','هو حيوان رنّة يستطيع تغيير شكله'),
+  CharacterInfo('روبين','One Piece','باحثة في التاريخ وعضو في الطاقم','تستخدم قدرة هانا هانا نو مي'),
+  CharacterInfo('نامي','One Piece','ملاحة طاقم قبعة القش','تتقن قراءة الخرائط'),
+  CharacterInfo('أوراراكا','My Hero Academia','بطلة متدربة في أكاديمية الأبطال','تملك قدرة التحكم في الجاذبية'),
+  CharacterInfo('كاكاشي','Naruto','نينجا ومدرب فريق','يشتهر بالشارينغان'),
+  CharacterInfo('غارا','Naruto','كاجي قرية الرمال','يستخدم الرمل في القتال'),
+  CharacterInfo('إيتادوري','Jujutsu Kaisen','طالب ساحر في مدرسة الجوجوتسو','يرتبط بسكونا'),
+  CharacterInfo('سوكونا','Jujutsu Kaisen','لعنة قوية جدًا','يُعرف بملك اللعنات'),
 ];
 
-class EndlessQuizGame extends StatefulWidget {
-  final String title;
-  final List<Q> questions;
-  const EndlessQuizGame({super.key, required this.title, required this.questions});
-  @override State<EndlessQuizGame> createState()=>_EndlessQuizState();
+const _facts = <List<String>>[
+  ['ما أكبر محيط على الأرض؟','المحيط الهادئ','المحيط الأطلسي','المحيط الهندي','المحيط المتجمد الشمالي'],
+  ['ما الغاز الأكثر وفرة في الغلاف الجوي؟','النيتروجين','الأكسجين','الهيدروجين','ثاني أكسيد الكربون'],
+  ['كم كوكبًا في النظام الشمسي؟','ثمانية','سبعة','تسعة','عشرة'],
+  ['ما اسم الكوكب الأحمر؟','المريخ','الزهرة','عطارد','نبتون'],
+  ['ما أكبر كوكب في النظام الشمسي؟','المشتري','زحل','الأرض','نبتون'],
+  ['ما رمز الماء الكيميائي؟','H2O','CO2','O2','NaCl'],
+  ['ما الكوكب الأقرب إلى الشمس؟','عطارد','الأرض','المريخ','الزهرة'],
+  ['كم ضلعًا للمثلث؟','ثلاثة','أربعة','خمسة','ستة'],
+  ['كم دقيقة في الساعة؟','ستون','خمسون','أربعون','سبعون'],
+  ['كم ثانية في الدقيقة؟','ستون','ثلاثون','مائة','مائتان'],
+  ['ما عاصمة مصر؟','القاهرة','الإسكندرية','الأقصر','أسوان'],
+  ['ما اللغة التي تستخدمها Flutter أساسًا؟','Dart','Java','Swift','Kotlin'],
+];
+
+int _mix(int value) {
+  var x = value & 0x7fffffff;
+  x ^= x >> 16;
+  x = (x * 0x45d9f3b) & 0x7fffffff;
+  x ^= x >> 16;
+  x = (x * 0x45d9f3b) & 0x7fffffff;
+  x ^= x >> 16;
+  return x & 0x7fffffff;
 }
-class _EndlessQuizState extends State<EndlessQuizGame> {
-  final Random random=Random();
-  late List<Q> deck;
-  int index=0,score=0,round=1;
-  int? picked;
-  String? lastQuestion;
-  @override void initState(){super.initState();_newDeck();}
-  void _newDeck(){
-    deck=List<Q>.from(widget.questions)..shuffle(random);
-    if(lastQuestion!=null&&deck.length>1&&deck.first.text==lastQuestion){
-      final i=deck.indexWhere((q)=>q.text!=lastQuestion);
-      final t=deck[0];deck[0]=deck[i];deck[i]=t;
-    }
-    index=0;
+
+int _pick(int seed, int salt, int length) {
+  if (length <= 1) return 0;
+  return _mix(seed + salt * 1009) % length;
+}
+
+String _arNumber(int value) {
+  const digits = '٠١٢٣٤٥٦٧٨٩';
+  return value.toString().split('').map((x) {
+    final i = int.tryParse(x);
+    return i == null ? x : digits[i];
+  }).join();
+}
+
+List<String> _shuffleOptions(String correct, Iterable<String> distractors, int seed) {
+  final values = <String>[correct];
+  for (final value in distractors) {
+    if (value != correct && !values.contains(value)) values.add(value);
+    if (values.length == 4) break;
   }
-  void next(){
-    lastQuestion=deck[index].text;
+  for (var i = values.length - 1, salt = 17; i > 0; i--, salt++) {
+    final j = _pick(seed, salt, i + 1);
+    final temp = values[i];
+    values[i] = values[j];
+    values[j] = temp;
+  }
+  return values;
+}
+
+Q _mcq(String text, String correct, List<String> distractors, int seed) {
+  final options = _shuffleOptions(correct, distractors, seed);
+  return Q(text, options, options.indexOf(correct));
+}
+
+Q _numericQuestion(String text, int answer, int seed) {
+  final gap = 1 + _pick(seed, 7, 9);
+  final candidates = <int>{answer};
+  for (var step = 1; candidates.length < 4; step++) {
+    final delta = gap * step;
+    candidates.add(answer + delta);
+    candidates.add(answer - delta);
+  }
+  final answerText = _arNumber(answer);
+  final options = _shuffleOptions(answerText, candidates.map(_arNumber), seed);
+  return Q(text, options, options.indexOf(answerText));
+}
+
+Q generateTriviaQuestion(int seed) {
+  if (_pick(seed, 1, 3) == 0) {
+    final fact = _facts[_pick(seed, 2, _facts.length)];
+    final variant = _pick(seed, 3, 3);
+    final text = variant == 0
+        ? fact[0]
+        : variant == 1
+            ? 'اختر الإجابة الصحيحة: ' + fact[0]
+            : 'معلومة سريعة: ' + fact[0];
+    return _mcq(text, fact[1], fact.sublist(2), seed);
+  }
+  switch (_pick(seed, 11, 12)) {
+    case 0:
+      final a = 10 + _pick(seed, 12, 90);
+      final b = 1 + _pick(seed, 13, 90);
+      return _numericQuestion('ما ناتج ' + _arNumber(a) + ' + ' + _arNumber(b) + '؟', a + b, seed);
+    case 1:
+      final a = 5 + _pick(seed, 14, 30);
+      final b = 2 + _pick(seed, 15, 20);
+      return _numericQuestion('ما ناتج ' + _arNumber(a) + ' × ' + _arNumber(b) + '؟', a * b, seed);
+    case 2:
+      final a = 20 + _pick(seed, 16, 80);
+      final b = 1 + _pick(seed, 17, 30);
+      final high = max(a, b);
+      final low = min(a, b);
+      return _numericQuestion('ما ناتج ' + _arNumber(high) + ' − ' + _arNumber(low) + '؟', high - low, seed);
+    case 3:
+      final divisor = 2 + _pick(seed, 18, 8);
+      final quotient = 2 + _pick(seed, 19, 20);
+      final answer = divisor * quotient;
+      return _numericQuestion('ما ناتج ' + _arNumber(answer) + ' ÷ ' + _arNumber(divisor) + '؟', quotient, seed);
+    case 4:
+      final minutes = 2 + _pick(seed, 20, 58);
+      return _numericQuestion('كم ثانية في ' + _arNumber(minutes) + ' دقيقة؟', minutes * 60, seed);
+    case 5:
+      final hours = 1 + _pick(seed, 21, 23);
+      return _numericQuestion('كم دقيقة في ' + _arNumber(hours) + ' ساعة؟', hours * 60, seed);
+    case 6:
+      final days = 1 + _pick(seed, 22, 20);
+      return _numericQuestion('كم ساعة في ' + _arNumber(days) + ' يومًا؟', days * 24, seed);
+    case 7:
+      final a = 1 + _pick(seed, 23, 50);
+      var b = 1 + _pick(seed, 24, 50);
+      if (a == b) b++;
+      final high = max(a, b);
+      return _mcq('أي العددين أكبر: ' + _arNumber(a) + ' أم ' + _arNumber(b) + '؟', _arNumber(high), [_arNumber(min(a, b)),'متساويان',_arNumber(high + 1)], seed);
+    case 8:
+      final n = 2 + _pick(seed, 25, 999);
+      final answer = n.isEven ? 'زوجي' : 'فردي';
+      return _mcq('العدد ' + _arNumber(n) + ' هو...', answer, [answer == 'زوجي' ? 'فردي' : 'زوجي','عدد أولي','عدد سالب'], seed);
+    case 9:
+      final power = 2 + _pick(seed, 26, 7);
+      final answer = pow(2, power).toInt();
+      return _numericQuestion('ما قيمة ٢ أس ' + _arNumber(power) + '؟', answer, seed);
+    case 10:
+      final a = 10 + _pick(seed, 27, 70);
+      final b = 2 + _pick(seed, 28, 20);
+      final c = 1 + _pick(seed, 29, 10);
+      return _numericQuestion('ما ناتج ' + _arNumber(a) + ' + ' + _arNumber(b) + ' − ' + _arNumber(c) + '؟', a + b - c, seed);
+    default:
+      final a = 10 + _pick(seed, 30, 90);
+      return _numericQuestion('ما ناتج ' + _arNumber(a) + ' + ٧؟', a + 7, seed);
+  }
+}
+
+String _clueText(CharacterInfo target, int combo) {
+  switch (combo) {
+    case 0: return 'المرتبط بعالم ' + target.universe;
+    case 1: return 'الذي ' + target.role;
+    case 2: return 'الذي ' + target.trait;
+    case 3: return 'المرتبط بعالم ' + target.universe + ' والذي ' + target.role;
+    case 4: return 'المرتبط بعالم ' + target.universe + ' والذي ' + target.trait;
+    case 5: return 'الذي ' + target.role + ' و' + target.trait;
+    default: return 'المرتبط بعالم ' + target.universe + ' والذي ' + target.role + ' و' + target.trait;
+  }
+}
+
+Q _generateCharacterQuestion(int seed, bool animeMode) {
+  final baseSalt = animeMode ? 141 : 131;
+  final target = characterPool[_pick(seed, baseSalt, characterPool.length)];
+  final combo = _pick(seed, baseSalt + 1, 7);
+  final wording = _pick(seed, baseSalt + 2, 5);
+  final clue = _clueText(target, combo);
+  final text = switch (wording) {
+    0 => 'من الشخصية ' + clue + '؟',
+    1 => 'اختر الشخصية ' + clue + '.',
+    2 => 'أي اسم يطابق الوصف: ' + clue + '؟',
+    3 => 'خمن الشخصية: ' + clue + '؟',
+    _ => 'من أنا؟ ' + clue + '؟',
+  };
+  final distractors = <String>[];
+  for (var i = 1; distractors.length < 3; i++) {
+    final candidate = characterPool[_pick(seed, baseSalt + 19 + i * 13, characterPool.length)].name;
+    if (candidate != target.name && !distractors.contains(candidate)) distractors.add(candidate);
+  }
+  return _mcq(text, target.name, distractors, seed);
+}
+
+Q generateWhoQuestion(int seed) => _generateCharacterQuestion(seed, false);
+Q generateAnimeQuestion(int seed) => _generateCharacterQuestion(seed, true);
+
+Q generateRiddleQuestion(int seed) {
+  switch (_pick(seed, 51, 8)) {
+    case 0:
+      final x = 5 + _pick(seed, 52, 80);
+      final y = 2 + _pick(seed, 53, 30);
+      return _numericQuestion('لغز: أنا عدد، إذا أضفت إلي ' + _arNumber(y) + ' أصبحت ' + _arNumber(x + y) + '. من أنا؟', x, seed);
+    case 1:
+      final total = 8 + _pick(seed, 54, 60);
+      final used = 1 + _pick(seed, 55, total - 1);
+      final extra = 1 + _pick(seed, 56, 20);
+      return _numericQuestion('لغز: لديك ' + _arNumber(total) + ' قطعة، استخدمت ' + _arNumber(used) + ' ثم حصلت على ' + _arNumber(extra) + ' أخرى. كم أصبح لديك؟', total - used + extra, seed);
+    case 2:
+      final start = 2 + _pick(seed, 57, 20);
+      final step = 2 + _pick(seed, 58, 12);
+      return _numericQuestion('لغز: ' + _arNumber(start) + '، ' + _arNumber(start + step) + '، ' + _arNumber(start + step * 2) + '، ما العدد التالي؟', start + step * 3, seed);
+    case 3:
+      final shelves = 2 + _pick(seed, 60, 8);
+      final each = 2 + _pick(seed, 61, 12);
+      final total = shelves * each;
+      return _numericQuestion('لغز: رتبت ' + _arNumber(total) + ' كتابًا بالتساوي على ' + _arNumber(shelves) + ' أرفف. كم كتابًا في كل رف؟', each, seed);
+    case 4:
+      final hour = 1 + _pick(seed, 62, 12);
+      final add = 1 + _pick(seed, 63, 11);
+      final answer = ((hour - 1 + add) % 12) + 1;
+      return _numericQuestion('لغز الساعة: إذا كانت الساعة ' + _arNumber(hour) + ' وأضافت ' + _arNumber(add) + ' ساعات، فما رقم الساعة؟', answer, seed);
+    case 5:
+      final rows = 2 + _pick(seed, 64, 9);
+      final cols = 2 + _pick(seed, 65, 9);
+      return _numericQuestion('لغز: مستطيل فيه ' + _arNumber(rows) + ' صفوف و' + _arNumber(cols) + ' أعمدة. كم خانة فيه؟', rows * cols, seed);
+    case 6:
+      final base = 2 + _pick(seed, 66, 18);
+      return _numericQuestion('لغز: لدي عدد، وعند مضاعفته يصبح ' + _arNumber(base * 2) + '. ما العدد؟', base, seed);
+    default:
+      final a = 3 + _pick(seed, 67, 15);
+      final b = 2 + _pick(seed, 68, 10);
+      final c = 1 + _pick(seed, 69, 9);
+      return _numericQuestion('لغز: ابدأ بـ ' + _arNumber(a) + '، اضرب في ' + _arNumber(b) + ' ثم اطرح ' + _arNumber(c) + '. ما الناتج؟', a * b - c, seed);
+  }
+}
+
+Q generateImpossibleQuestion(int seed) {
+  switch (_pick(seed, 71, 8)) {
+    case 0:
+      final people = 3 + _pick(seed, 72, 8);
+      return _mcq('في سباق تجاوزت الشخص الذي كان في المركز الثاني بين ' + _arNumber(people) + ' متسابقين. ما مركزك الآن؟','الثاني',['الأول','الثالث','الأخير'],seed);
+    case 1:
+      final apples = 3 + _pick(seed, 73, 12);
+      final taken = 1 + _pick(seed, 74, min(apples, 4));
+      return _mcq('لديك ' + _arNumber(apples) + ' تفاحات وأخذت ' + _arNumber(taken) + ' منها. كم تفاحة أصبحت معك؟',_arNumber(taken),[_arNumber(apples - taken),_arNumber(apples),_arNumber(apples + taken)],seed);
+    case 2:
+      return _mcq('أي شهر فيه ٢٨ يومًا؟','كل الشهور',['شهر فبراير فقط','ستة شهور','شهران'],seed);
+    case 3:
+      final number = 10 + _pick(seed, 75, 90);
+      return _mcq('إذا كان لديك ' + _arNumber(number) + ' شمعة وأطفأت شمعة واحدة، كم شمعة تظل موجودة؟',_arNumber(number),[_arNumber(number - 1),'واحدة',_arNumber(number + 1)],seed);
+    case 4:
+      final age = 8 + _pick(seed, 76, 20);
+      final years = 2 + _pick(seed, 77, 10);
+      return _numericQuestion('شخص عمره ' + _arNumber(age) + ' سنوات. بعد ' + _arNumber(years) + ' سنوات، كم سيكون عمره؟',age + years,seed);
+    case 5:
+      return _mcq('أنت تقود حافلة. صعد ٥ ركاب، ثم نزل ٢ وصعد ٣. من يقود الحافلة؟','أنت',['الركاب','سائق آخر','لا أحد'],seed);
+    case 6:
+      final boxes = 2 + _pick(seed, 78, 8);
+      return _numericQuestion('لديك ' + _arNumber(boxes) + ' صناديق، في كل صندوق ٤ كرات. كم كرة لديك؟',boxes * 4,seed);
+    default:
+      final minutes = 5 + _pick(seed, 79, 55);
+      return _numericQuestion('بدأت مهمة ثم مرّ ' + _arNumber(minutes) + ' دقيقة. كم دقيقة مرّت؟',minutes,seed);
+  }
+}
+
+const ratherPool = <String>[
+  'تعيش يومًا بلا هاتف','تعيش يومًا بلا ألعاب','تتعلم لغة فورًا','تتعلم آلة فورًا',
+  'تستكشف الفضاء','تستكشف أعماق المحيط','تملك ذاكرة مثالية','تملك تركيزًا مثاليًا',
+  'تتحرك بسرعة خارقة','تستطيع الاختفاء','تقرأ أي خريطة فورًا','تفهم أي لغز من أول محاولة',
+  'تسافر للماضي','تسافر للمستقبل','تملك غرفة ألعاب كبيرة','تملك مكتبة ضخمة',
+  'تكون بطلًا ليوم واحد','تكون مخترعًا ليوم واحد','تعيش في مدينة ذكية','تعيش في جزيرة هادئة',
+  'تجرب كل لعبة مرة','تجرب كل فيلم مرة','تتقن الطبخ فورًا','تتقن الرسم فورًا',
+  'تتعلم العزف فورًا','تتذكر كل الوجوه','تستطيع التحدث مع الحيوانات','تفوز في أي لعبة ورق',
+  'تملك روبوتًا مساعدًا','تعيش أسبوعًا بلا إنترنت','تجد أي شيء مفقود','تتعلم الطباعة بسرعة',
+  'تسافر حول العالم','تعيش في مركبة ذكية','تملك غرفة سينما','تبدأ يومك من دون منبّه',
+];
+
+Q generateRatherQuestion(int seed) {
+  final a = _pick(seed, 81, ratherPool.length);
+  var b = _pick(seed, 82, ratherPool.length);
+  if (a == b) b = (b + 1) % ratherPool.length;
+  return Q('ماذا تفضل؟',['الخيار الأول: ' + ratherPool[a],'الخيار الثاني: ' + ratherPool[b]],_pick(seed, 83, 2));
+}
+
+Q generateTwentyQuestion(int seed) {
+  const objects = ['الهاتف','الكتاب','السيارة','الدراجة','الحاسوب','الكرة','المظلة','الحقيبة','الساعة','المصباح','السماعة','الطائرة','القطار','القلم','الكاميرا','التلفاز','الحذاء','المفتاح','الطاولة','الشجرة','الباب','النافذة','الطعام','الكرسي'];
+  const properties = ['يستخدم يوميًا','يمكن حمله','يوجد عادة في المنزل','يحتاج طاقة','يمكن نقله من مكان لآخر','مرتبط بالتقنية','له أكثر من استخدام','يمكن أن يكون مصنوعًا من المعدن','يمكن أن يكون له شاشة','يمكن أن يسبب ضوضاء','يمكن تنظيفه','يمكن أن يكون صغيرًا','يمكن أن يكون كبيرًا','يستخدم في السفر','يمكن مشاركته مع الآخرين','يمكن إصلاحه','يمكن شراؤه من متجر','قد يكون له زر','يمكن أن يكون له لون مختلف','يمكن تخزينه'];
+  final object = objects[_pick(seed, 91, objects.length)];
+  final property = properties[_pick(seed, 92, properties.length)];
+  final answer = _pick(seed, 93, 2);
+  return Q('هل ' + object + ' ' + property + '؟',['نعم','لا'],answer);
+}
+
+Q generateClueQuestion(int seed) => generateWhoQuestion(seed + 7000);
+
+Q generateMathQuestion(int seed) {
+  final a = 2 + _pick(seed, 111, 80);
+  final b = 1 + _pick(seed, 112, 60);
+  switch (_pick(seed, 113, 4)) {
+    case 0: return _numericQuestion(_arNumber(a) + ' + ' + _arNumber(b) + ' = ؟',a+b,seed);
+    case 1:
+      final high = max(a,b);
+      final low = min(a,b);
+      return _numericQuestion(_arNumber(high) + ' − ' + _arNumber(low) + ' = ؟',high-low,seed);
+    case 2:
+      final multiplier = b % 15 + 2;
+      return _numericQuestion(_arNumber(a) + ' × ' + _arNumber(multiplier) + ' = ؟',a*multiplier,seed);
+    default:
+      final d = 2 + _pick(seed, 114, 9);
+      final q = 2 + _pick(seed, 115, 20);
+      return _numericQuestion(_arNumber(d*q) + ' ÷ ' + _arNumber(d) + ' = ؟',q,seed);
+  }
+}
+
+Q generateSequenceQuestion(int seed) {
+  final start = 1 + _pick(seed, 121, 25);
+  final step = 1 + _pick(seed, 122, 12);
+  if (_pick(seed, 123, 2) == 0) {
+    return _numericQuestion(_arNumber(start) + '، ' + _arNumber(start+step) + '، ' + _arNumber(start+step*2) + '، ' + _arNumber(start+step*3) + '، ؟',start+step*4,seed);
+  }
+  final multiplier = 2 + _pick(seed, 124, 3);
+  final answer = start * pow(multiplier,3).toInt();
+  return _numericQuestion(_arNumber(start) + '، ' + _arNumber(start*multiplier) + '، ' + _arNumber(start*multiplier*multiplier) + '، ؟',answer,seed);
+}
+
+Q generateTrueFalseQuestion(int seed) {
+  final a = 2 + _pick(seed, 131, 99);
+  final b = 1 + _pick(seed, 132, 99);
+  final actual = a + b;
+  final truth = _pick(seed, 133, 2) == 0;
+  final shown = truth ? actual : actual + 1 + _pick(seed, 134, 5);
+  final correct = truth ? 'صح' : 'غلط';
+  final wrong = truth ? 'غلط' : 'صح';
+  return Q('هل العبارة صحيحة؟ ' + _arNumber(a) + ' + ' + _arNumber(b) + ' = ' + _arNumber(shown),[correct,wrong],0);
+}
+
+Q generateCompareQuestion(int seed) {
+  final a = 5 + _pick(seed, 141, 5000);
+  var b = 5 + _pick(seed, 142, 5000);
+  if (a == b) b++;
+  final correct = a > b ? _arNumber(a) : _arNumber(b);
+  final smaller = a > b ? _arNumber(b) : _arNumber(a);
+  return _mcq('أي عدد أكبر: ' + _arNumber(a) + ' أم ' + _arNumber(b) + '؟',correct,[smaller,'متساويان',_arNumber(max(a,b)+1)],seed);
+}
+
+class EndlessQuestionGame extends StatefulWidget {
+  final String title;
+  final Q Function(int seed) generator;
+  const EndlessQuestionGame({super.key,required this.title,required this.generator});
+  @override State<EndlessQuestionGame> createState()=>_EndlessQuestionGameState();
+}
+
+class _EndlessQuestionGameState extends State<EndlessQuestionGame> {
+  final used=<String>{};
+  var serial=0;
+  late Q current;
+  int score=0,questionNumber=1;
+  int? picked;
+
+  Q _nextUnique(){
+    for(var attempt=0;attempt<1000;attempt++){
+      final q=widget.generator(serial++);
+      if(used.add(q.key))return q;
+    }
+    throw StateError('تعذر توليد سؤال جديد فريد');
+  }
+
+  @override void initState(){super.initState();current=_nextUnique();}
+
+  void answer(int option){
+    if(picked!=null)return;
     setState((){
-      if(index==deck.length-1){round++;_newDeck();}else{index++;}
+      picked=option;
+      if(option==current.answer)score++;
+    });
+  }
+
+  void next(){
+    setState((){
+      current=_nextUnique();
+      questionNumber++;
       picked=null;
     });
   }
-  @override Widget build(BuildContext context){
-    final q=deck[index];
-    return Padding(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
-      Text(widget.title+' • الجولة '+round.toString()+' • السؤال '+(index+1).toString()+'/'+deck.length.toString(),textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w700)),
-      const SizedBox(height:14),
-      Text(q.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:24,fontWeight:FontWeight.w900)),
-      const SizedBox(height:16),
-      ...List.generate(q.options.length,(n)=>Padding(padding:const EdgeInsets.only(bottom:9),child:FilledButton.tonal(
-        onPressed:picked==null?(){setState((){picked=n;if(n==q.answer)score++;});}:null,child:Text(q.options[n],textAlign:TextAlign.center)))),
+
+  @override Widget build(BuildContext context)=>Padding(
+    padding:const EdgeInsets.all(18),
+    child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
+      Text('السؤال ' + _arNumber(questionNumber) + ' • النقاط ' + _arNumber(score),textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),
+      const SizedBox(height:18),
+      Text(current.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:24,fontWeight:FontWeight.w900)),
+      const SizedBox(height:18),
+      ...List.generate(current.options.length,(i)=>Padding(padding:const EdgeInsets.only(bottom:9),child:FilledButton.tonal(onPressed:picked==null?()=>answer(i):null,child:Text(current.options[i],textAlign:TextAlign.center)))),
       const Spacer(),
-      if(picked!=null)Text(picked==q.answer?'إجابة صحيحة':'إجابة غير صحيحة',textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),
-      const SizedBox(height:10),Text('النقاط: '+score.toString(),textAlign:TextAlign.center,style:const TextStyle(color:Colors.white)),
-      const SizedBox(height:8),FilledButton(onPressed:picked==null?null:next,child:const Text('السؤال التالي')),
-    ]));
-  }
+      if(picked!=null)Text(picked==current.answer?'إجابة صحيحة':'إجابة غير صحيحة',textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),
+      const SizedBox(height:10),
+      FilledButton(onPressed:picked==null?null:next,child:const Text('السؤال التالي')),
+    ]),
+  );
 }
-class TriviaGame extends StatelessWidget{const TriviaGame({super.key});@override Widget build(BuildContext c)=>const EndlessQuizGame(title:'المسابقة المتنوعة',questions:trivia);}
-class WhoGame extends StatelessWidget{const WhoGame({super.key});@override Widget build(BuildContext c)=>const EndlessQuizGame(title:'من أنا؟',questions:who);}
-class RiddleGame extends StatelessWidget{const RiddleGame({super.key});@override Widget build(BuildContext c)=>const EndlessQuizGame(title:'الألغاز',questions:riddles);}
-class AnimeGame extends StatelessWidget{const AnimeGame({super.key});@override Widget build(BuildContext c)=>const EndlessQuizGame(title:'مسابقة الأنمي',questions:anime);}
-class ImpossibleGame extends StatelessWidget{const ImpossibleGame({super.key});@override Widget build(BuildContext c)=>const EndlessQuizGame(title:'المسابقة الخادعة',questions:impossible);}
+
+class TriviaGame extends StatelessWidget{
+  const TriviaGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'المسابقة المتنوعة',generator:generateTriviaQuestion);
+}
+class WhoGame extends StatelessWidget{
+  const WhoGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'من أنا؟',generator:generateWhoQuestion);
+}
+class RiddleGame extends StatelessWidget{
+  const RiddleGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'الألغاز',generator:generateRiddleQuestion);
+}
+class AnimeGame extends StatelessWidget{
+  const AnimeGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'مسابقة الأنمي',generator:generateAnimeQuestion);
+}
+class ImpossibleGame extends StatelessWidget{
+  const ImpossibleGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'المسابقة الخادعة',generator:generateImpossibleQuestion);
+}
+class MathQuizGame extends StatelessWidget{
+  const MathQuizGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'الحساب السريع',generator:generateMathQuestion);
+}
+class SequenceGame extends StatelessWidget{
+  const SequenceGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'نمط الأرقام',generator:generateSequenceQuestion);
+}
+class TrueFalseGame extends StatelessWidget{
+  const TrueFalseGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'صح أم غلط',generator:generateTrueFalseQuestion);
+}
+class CompareGame extends StatelessWidget{
+  const CompareGame({super.key});
+  @override Widget build(BuildContext context)=>EndlessQuestionGame(title:'الأكبر؟',generator:generateCompareQuestion);
+}
 
 class TwentyQ extends StatefulWidget {
   const TwentyQ({super.key});
@@ -308,39 +687,44 @@ class _TwentyQState extends State<TwentyQ>{
     const SizedBox(height:10),Text('إجابات نعم: '+yes.toString(),style:const TextStyle(color:Colors.white)),const SizedBox(height:22),
     Row(children:[Expanded(child:FilledButton(onPressed:()=>answer(true),child:const Text('نعم'))),const SizedBox(width:10),Expanded(child:FilledButton.tonal(onPressed:()=>answer(false),child:const Text('لا')))]),
   ])));}}
-class ClueGame extends StatefulWidget {
+
+class ClueGame extends StatelessWidget {
   const ClueGame({super.key});
-  @override State<ClueGame> createState()=>_ClueState();
+  @override Widget build(BuildContext context)=>const EndlessQuestionGame(title:'خمن الشخصية',generator:generateClueQuestion);
 }
-class _ClueState extends State<ClueGame>{
-  final sets=const[
-    ['شخصية ألعاب معروفة','ترتبط باللون الأحمر','تظهر في ألعاب المنصات','لها أخ مشهور','اسمها يبدأ بحرف الميم'],
-    ['شخصية مقاتلة','تستخدم سيفًا','تظهر في عالم خيالي','لها خصم قوي','تشتهر بالانضباط'],
-    ['شخصية سريعة','تتحرك في عالم ملون','تجمع عناصر أثناء اللعب','لها أصدقاء كثيرون','تعتمد على السرعة'],
-  ];
-  int setIndex=0,clue=0;
-  @override Widget build(BuildContext context){final x=sets[setIndex],done=clue==x.length;return Center(child:Padding(padding:const EdgeInsets.all(24),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[
-    Text(done?'الشخصية الحالية: ماريو':'الدليل '+(clue+1).toString()+'/'+x.length.toString(),style:const TextStyle(color:Colors.white,fontSize:28,fontWeight:FontWeight.w900),textAlign:TextAlign.center),
-    const SizedBox(height:16),Text(done?'ابدأ مجموعة مختلفة':'الدليل الحالي: '+x[clue],textAlign:TextAlign.center,style:const TextStyle(color:Colors.white)),
-    const SizedBox(height:22),FilledButton(onPressed:()=>setState((){if(done){setIndex=(setIndex+1)%sets.length;clue=0;}else{clue++;}}),child:Text(done?'جولة جديدة':'الدليل التالي')),
-  ])));}}
-class RatherGame extends StatefulWidget {
+
+
+class RatherGame extends StatefulWidget{
   const RatherGame({super.key});
   @override State<RatherGame> createState()=>_RatherState();
 }
 class _RatherState extends State<RatherGame>{
-  final choices=const[
-    ['تعيش يومًا كاملًا بلا هاتف','تعيش يومًا كاملًا بلا ألعاب'],['تملك ذاكرة مثالية','تملك تركيزًا مثاليًا'],
-    ['تتحرك بسرعة خارقة','تستطيع الاختفاء'],['تختار بابًا سحريًا','تختار خريطة كنوز'],
-    ['تتعلم آلة جديدة فورًا','تتعلم لغة جديدة فورًا'],['تستكشف الفضاء','تستكشف أعماق المحيط'],
-  ];
-  int index=0;
-  @override Widget build(BuildContext context){final pair=choices[index];return Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[
-    Text('الجولة '+(index+1).toString(),style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),const SizedBox(height:12),
-    const Text('ماذا تفضل؟',style:TextStyle(color:Colors.white,fontSize:30,fontWeight:FontWeight.w900)),const SizedBox(height:22),
-    ...pair.map((x)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SizedBox(width:double.infinity,child:FilledButton.tonal(onPressed:()=>setState(()=>index=(index+1)%choices.length),child:Text(x,textAlign:TextAlign.center))))),
-    const Text('اختر أحد الخيارين',style:TextStyle(color:Colors.white)),
-  ]));}}
+  final used=<String>{};
+  var serial=0;
+  late Q current;
+  bool chosen=false;
+  Q _nextUnique(){
+    for(var attempt=0;attempt<1000;attempt++){
+      final q=generateRatherQuestion(serial++);
+      if(used.add(q.key))return q;
+    }
+    throw StateError('تعذر توليد اختيار جديد فريد');
+  }
+  @override void initState(){super.initState();current=_nextUnique();}
+  void choose(int value){if(chosen)return;setState(()=>chosen=true);}
+  void next()=>setState((){current=_nextUnique();chosen=false;});
+  @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[
+    Text('الجولة ' + _arNumber(used.length),style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),
+    const SizedBox(height:12),
+    Text(current.text,style:const TextStyle(color:Colors.white,fontSize:30,fontWeight:FontWeight.w900)),
+    const SizedBox(height:22),
+    ...List.generate(current.options.length,(i)=>Padding(padding:const EdgeInsets.only(bottom:10),child:SizedBox(width:double.infinity,child:FilledButton.tonal(onPressed:chosen?null:()=>choose(i),child:Text(current.options[i],textAlign:TextAlign.center))))),
+    if(chosen)const Text('اختيارك محفوظ للجولة',style:TextStyle(color:Colors.white)),
+    const SizedBox(height:14),
+    FilledButton(onPressed:chosen?next:null,child:const Text('ماذا بعد؟')),
+  ]));
+}
+
 class WordGame extends StatefulWidget{
   const WordGame({super.key});
   @override State<WordGame> createState()=>_WordState();
@@ -431,26 +815,63 @@ class _DetectiveState extends State<DetectiveGame>{
     Text(x[0],style:const TextStyle(color:Colors.white,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text(x[1],style:const TextStyle(color:Colors.white)),const Spacer(),Text(message,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white)),const SizedBox(height:12),
     FilledButton.tonal(onPressed:()=>solve(0),child:Text('المشتبه: '+x[2])),FilledButton.tonal(onPressed:()=>solve(1),child:Text('المشتبه: '+x[3])),FilledButton.tonal(onPressed:()=>solve(2),child:Text('المشتبه: '+x[4])),
   ]));}}
+
 class BattleGame extends StatefulWidget{
   const BattleGame({super.key});
   @override State<BattleGame> createState()=>_BattleState();
 }
 class _BattleState extends State<BattleGame>{
-  final random=Random();late List<Q> deck;Timer?timer;
-  int sec=30,score=0,combo=0,index=0;int?picked;
-  @override void initState(){super.initState();deck=List<Q>.from(trivia)..shuffle(random);timer=Timer.periodic(const Duration(seconds:1),(_)=>tick());}
+  final used=<String>{};
+  var serial=0;
+  late Q current;
+  Timer? timer;
+  int sec=30,score=0,combo=0,questionNumber=1;
+  int? picked;
+  Q _nextUnique(){
+    for(var attempt=0;attempt<1000;attempt++){
+      final q=generateTriviaQuestion(serial++);
+      if(used.add(q.key))return q;
+    }
+    throw StateError('تعذر توليد سؤال معركة فريد');
+  }
+  @override void initState(){
+    super.initState();
+    current=_nextUnique();
+    timer=Timer.periodic(const Duration(seconds:1),(_)=>tick());
+  }
   @override void dispose(){timer?.cancel();super.dispose();}
-  void tick(){if(!mounted)return;setState((){sec--;if(sec<=0){sec=30;index=(index+1)%deck.length;picked=null;combo=0;}});}
-  void answer(int n){final q=deck[index];setState((){picked=n;if(n==q.answer){combo++;score+=10+combo;}else{combo=0;}});}
-  void next(){setState((){index=(index+1)%deck.length;picked=null;sec=30;});}
-  @override Widget build(BuildContext context){final q=deck[index];return Padding(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
-    Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[Text('الوقت $sec'),Text('السلسلة $combo'),Text('النقاط $score')]),
-    const SizedBox(height:18),Text(q.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:24,fontWeight:FontWeight.w900)),
-    const SizedBox(height:12),...List.generate(q.options.length,(n)=>Padding(padding:const EdgeInsets.only(bottom:8),child:FilledButton.tonal(onPressed:picked==null?()=>answer(n):null,child:Text(q.options[n])))),
-    const Spacer(),if(picked!=null)Text(picked==q.answer?'إجابة صحيحة':'إجابة غير صحيحة',textAlign:TextAlign.center,style:const TextStyle(color:Colors.white)),
-    const SizedBox(height:10),FilledButton(onPressed:picked==null?null:next,child:const Text('التالي')),
-  ]));}
+  void tick(){
+    if(!mounted)return;
+    if(sec<=1){
+      setState((){current=_nextUnique();sec=30;combo=0;picked=null;questionNumber++;});
+    }else{
+      setState(()=>sec--);
+    }
+  }
+  void answer(int n){
+    if(picked!=null)return;
+    setState((){picked=n;if(n==current.answer){combo++;score+=10+combo;}else{combo=0;}});
+  }
+  void next()=>setState((){current=_nextUnique();picked=null;sec=30;questionNumber++;});
+  @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
+    Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[
+      Text('الوقت ' + _arNumber(sec),style:const TextStyle(color:Colors.white)),
+      Text('السلسلة ' + _arNumber(combo),style:const TextStyle(color:Colors.white)),
+      Text('النقاط ' + _arNumber(score),style:const TextStyle(color:Colors.white)),
+    ]),
+    const SizedBox(height:18),
+    Text('السؤال ' + _arNumber(questionNumber),textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w700)),
+    const SizedBox(height:10),
+    Text(current.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:24,fontWeight:FontWeight.w900)),
+    const SizedBox(height:12),
+    ...List.generate(current.options.length,(n)=>Padding(padding:const EdgeInsets.only(bottom:8),child:FilledButton.tonal(onPressed:picked==null?()=>answer(n):null,child:Text(current.options[n])))),
+    const Spacer(),
+    if(picked!=null)Text(picked==current.answer?'إجابة صحيحة':'إجابة غير صحيحة',textAlign:TextAlign.center,style:const TextStyle(color:Colors.white)),
+    const SizedBox(height:10),
+    FilledButton(onPressed:picked==null?null:next,child:const Text('التالي')),
+  ]));
 }
+
 class MemoryGame extends StatefulWidget{
   const MemoryGame({super.key});
   @override State<MemoryGame>createState()=>_MemoryState();
@@ -789,24 +1210,47 @@ class _EscapeState extends State<EscapeGame>{
   ])));
 }
 
+
 class BossGame extends StatefulWidget{
   const BossGame({super.key});
   @override State<BossGame> createState()=>_BossState();
 }
 class _BossState extends State<BossGame>{
-  int hp=100,index=0,defeated=0;
-  final questions=const[
-    Q('ما الكوكب الأقرب إلى الشمس؟',['عطارد','المريخ','المشتري','الأرض'],0),
-    Q('كم ضلعًا للمثلث؟',['ثلاثة','أربعة','خمسة','ستة'],0),
-    Q('ما أسرع حيوان بري؟',['الفهد','الحصان','الذئب','النمر'],0),
-    Q('ما عاصمة مصر؟',['القاهرة','الإسكندرية','الأقصر','أسوان'],0),
-    Q('كم دقيقة في الساعة؟',['ستون','خمسون','أربعون','سبعون'],0),
-  ];
-  void hit(int answer){final q=questions[index];setState((){hp=max(0,hp-(answer==q.answer?25:8));if(hp==0){defeated++;index=(index+1)%questions.length;hp=100;}});}
-  @override Widget build(BuildContext context){final q=questions[index];return Padding(padding:const EdgeInsets.all(20),child:Column(children:[
-    Text('طاقة الزعيم: '+hp.toString(),style:const TextStyle(color:Colors.white,fontSize:28,fontWeight:FontWeight.w900)),
-    Text('الزعماء المهزومون: '+defeated.toString(),style:const TextStyle(color:Colors.white)),const SizedBox(height:14),
-    Text(q.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:22)),const Spacer(),
-    ...List.generate(q.options.length,(i)=>Padding(padding:const EdgeInsets.only(bottom:8),child:FilledButton.tonal(onPressed:()=>hit(i),child:Text(q.options[i])))),
-  ]));}
+  final used=<String>{};
+  var serial=0;
+  late Q current;
+  int hp=100,defeated=0,questionNumber=1;
+  int? picked;
+  Q _nextUnique(){
+    for(var attempt=0;attempt<1000;attempt++){
+      final q=generateTriviaQuestion(serial++);
+      if(used.add(q.key))return q;
+    }
+    throw StateError('تعذر توليد سؤال زعيم فريد');
+  }
+  @override void initState(){super.initState();current=_nextUnique();}
+  void hit(int answer){if(picked!=null)return;setState(()=>picked=answer);}
+  void next(){
+    final damage=picked==current.answer?25:8;
+    setState((){
+      hp=max(0,hp-damage);
+      if(hp==0){defeated++;hp=100;}
+      current=_nextUnique();
+      picked=null;
+      questionNumber++;
+    });
+  }
+  @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.all(20),child:Column(children:[
+    Text('طاقة الزعيم: ' + _arNumber(hp),style:const TextStyle(color:Colors.white,fontSize:28,fontWeight:FontWeight.w900)),
+    Text('الزعماء المهزومون: ' + _arNumber(defeated) + ' • السؤال ' + _arNumber(questionNumber),style:const TextStyle(color:Colors.white)),
+    const SizedBox(height:14),
+    Text(current.text,textAlign:TextAlign.center,style:const TextStyle(color:Colors.white,fontSize:22)),
+    const Spacer(),
+    ...List.generate(current.options.length,(i)=>Padding(padding:const EdgeInsets.only(bottom:8),child:FilledButton.tonal(onPressed:picked==null?()=>hit(i):null,child:Text(current.options[i])))),
+    const Spacer(),
+    if(picked!=null)Text(picked==current.answer?'ضربة قوية':'ضربة ضعيفة',style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),
+    const SizedBox(height:10),
+    FilledButton(onPressed:picked==null?null:next,child:const Text('استمرار')),
+  ]));
 }
+
