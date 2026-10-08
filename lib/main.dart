@@ -490,7 +490,7 @@ class _MemoryState extends State<MemoryGame>{
       children:List.generate(4,(i)=>GestureDetector(onTap:()=>tap(i),child:Container(
         decoration:BoxDecoration(color:input.contains(i)?const Color(0xFF444444):const Color(0xFF222222),borderRadius:BorderRadius.circular(22)),
         child:Center(child:Text((i+1).toString(),style:const TextStyle(color:Colors.white,fontSize:26,fontWeight:FontWeight.w900))),
-      )))),
+      ))))),
     FilledButton(onPressed:showing?null:startGame,child:const Text('ابدأ')),
   ]);
 }
@@ -572,7 +572,7 @@ class _TetrisState extends State<TetrisGame>{
   void fall(){if(!mounted)return;if(y<rows-1){setState(()=>y++);}else{setState((){cells[(rows-1)*columns+x]=1;y=0;score++;if(cells.every((v)=>v!=0))cells=List.filled(columns*rows,0);});}}
   void reset(){setState((){cells=List.filled(columns*rows,0);x=3;y=0;score=0;});}
   @override Widget build(BuildContext context)=>Column(children:[
-    Expanded(child:Center(child:AspectRatio(aspectRatio:columns/rows,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:columns),itemCount:cells.length,itemBuilder:(_,i){final cx=i%columns,cy=i~/columns;return Container(margin:const EdgeInsets.all(1),color:(cx==x&&cy==y)||cells[i]!=0?const Color(0xFF444444):const Color(0xFF111111));}))),
+    Expanded(child:Center(child:AspectRatio(aspectRatio:columns/rows,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:columns),itemCount:cells.length,itemBuilder:(_,i){final cx=i%columns,cy=i~/columns;return Container(margin:const EdgeInsets.all(1),color:(cx==x&&cy==y)||cells[i]!=0?const Color(0xFF444444):const Color(0xFF111111));})))),
     Text('النقاط: $score',style:const TextStyle(color:Colors.white)),Row(mainAxisAlignment:MainAxisAlignment.center,children:[
       IconButton(onPressed:()=>setState(()=>x=max(0,x-1)),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:fall,icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:()=>setState(()=>x=min(columns-1,x+1)),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh)),
     ]),
@@ -590,7 +590,7 @@ class _MinesState extends State<MinesGame>{
   void tap(int i){if(over||opened[i])return;opened[i]=true;if(mines.contains(i)){over=true;setState((){});Future.delayed(const Duration(milliseconds:350),(){if(mounted)reset();});}else{setState((){});}}
   @override Widget build(BuildContext context)=>Column(children:[
     Text(over?'جولة جديدة الآن':'كاسحة الألغام',style:const TextStyle(color:Colors.white,fontSize:22,fontWeight:FontWeight.w900)),
-    Expanded(child:GridView.builder(padding:const EdgeInsets.all(18),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:8,crossAxisSpacing:4,mainAxisSpacing:4),itemCount:64,itemBuilder:(_,i)=>InkWell(onTap:()=>tap(i),child:Container(color:opened[i]?const Color(0xFF333333):const Color(0xFF181818),child:Center(child:Text(opened[i]?'•':'',style:const TextStyle(color:Colors.white)))))),
+    Expanded(child:GridView.builder(padding:const EdgeInsets.all(18),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:8,crossAxisSpacing:4,mainAxisSpacing:4),itemCount:64,itemBuilder:(_,i)=>InkWell(onTap:()=>tap(i),child:Container(color:opened[i]?const Color(0xFF333333):const Color(0xFF181818),child:Center(child:Text(opened[i]?'•':'',style:const TextStyle(color:Colors.white))))))),
     FilledButton(onPressed:reset,child:const Text('إعادة')),
   ]);
 }
