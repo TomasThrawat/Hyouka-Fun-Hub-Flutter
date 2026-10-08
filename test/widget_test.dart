@@ -13,7 +13,12 @@ void main() {
     final search = find.byType(TextField);
     await tester.enterText(search, 'Fake Hacker Terminal');
     await tester.pump();
-    expect(find.text('Fake Hacker Terminal'), findsOneWidget);
+
+    final gameCard = find.descendant(
+      of: find.byType(Card),
+      matching: find.text('Fake Hacker Terminal'),
+    );
+    expect(gameCard, findsOneWidget);
 
     await tester.enterText(search, '');
     await tester.pump();
