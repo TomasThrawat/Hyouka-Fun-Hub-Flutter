@@ -6,6 +6,6 @@ GitHub Actions installs Flutter, generates the Android platform, runs analyze an
 
 No HTML, no WebView, no runtime third-party packages.
 
-Included: 20 Questions, Guess the Character, Would You Rather, Trivia, Who Am I?, Riddles, Word Chain, Impostor, Text Adventure, Detective Mystery, Battle Quiz, Memory Game, Snake, 2048, Tetris, Minesweeper, Pong, Flappy Hop, Reaction Test, Typing Speed Test, Clicker, Number Guessing, Rock Paper Scissors, Sudoku, Checkers, Endless Runner, Maze, AI Dungeon-style Story, Mystery Generator, Random Challenge, Anime Character Quiz, Impossible Quiz, Fake Hacker Terminal simulation, Escape Room, Boss Battle Quiz, Fast Math, Number Patterns, True or False, Bigger Number.
+Question games now use a dedicated shared engine/UI layer with normalized content keys, expanded factual and procedural pools, randomized answer order, progressive difficulty, score/combo streaks, pause/resume, session statistics, a random-game shortcut, a date-based daily challenge, and a timed Battle mode with a proper game-over screen.
 
-Question games now generate new content from deterministic generators and keep a per-game used-content set so the active session does not repeat the same question content.
+Runtime features remain dependency-free. Statistics are current-session only, so no account or network service is required.
