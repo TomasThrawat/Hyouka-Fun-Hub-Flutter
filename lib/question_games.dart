@@ -171,102 +171,126 @@ class _EndlessQuestionGameState extends State<EndlessQuestionGame> {
   @override
   Widget build(BuildContext context) {
     final stats = GameStatsStore.instance;
-    final earned = questionBasePoints(current.difficulty) + min(15, (streak + 1) * 2).toInt();
-    return Padding(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    final earned =
+        questionBasePoints(current.difficulty) +
+        min(15, (streak + 1) * 2).toInt();
+
+    final children = <Widget>[
+      Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.title +
-                      ' • السؤال ' +
-                      arNumber(questionNumber) +
-                      ' • ' +
-                      questionDifficultyLabel(current.difficulty),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-                ),
+          Expanded(
+            child: Text(
+              widget.title +
+                  ' • السؤال ' +
+                  arNumber(questionNumber) +
+                  ' • ' +
+                  questionDifficultyLabel(current.difficulty),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
               ),
-              IconButton(
-                tooltip: paused ? 'استئناف' : 'إيقاف مؤقت',
-                onPressed: () => setState(() => paused = !paused),
-                icon: Icon(paused ? Icons.play_arrow : Icons.pause),
-              ),
-            ],
+            ),
           ),
-          Text(
-            'النقاط ' +
-                arNumber(score) +
-                ' • السلسلة ' +
-                arNumber(streak) +
-                ' • الأفضل ' +
-                arNumber(bestSessionStreak),
-            style: const TextStyle(color: Colors.white),
+          IconButton(
+            tooltip: paused ? 'استئناف' : 'إيقاف مؤقت',
+            onPressed: () => setState(() => paused = !paused),
+            icon: Icon(paused ? Icons.play_arrow : Icons.pause),
           ),
-          const SizedBox(height: 12),
-          if (paused)
-            Expanded(
-              child: Center(
-                child: FilledButton.icon(
-                  onPressed: () => setState(() => paused = false),
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('استئناف اللعبة'),
-                ),
-              ),
-            )
-          else ...[
-            Card(
-              color: const Color(0xFF111111),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Text(
-                  current.text,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            ...List.generate(
-              current.options.length,
-              (i) => Padding(
-                padding: const EdgeInsets.only(bottom: 9),
-                child: FilledButton.tonal(
-                  onPressed: picked == null ? () => answer(i) : null,
-                  child: Text(current.options[i], textAlign: TextAlign.center),
-                ),
-              ),
-            ),
-            const Spacer(),
-            if (picked != null)
-              Text(
-                picked == current.answer
-                    ? 'إجابة صحيحة • +' +
-                        arNumber(earned) +
-                        ' نقطة'
-                    : 'إجابة غير صحيحة',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-              ),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: picked == null ? null : next,
-              child: const Text('السؤال التالي'),
-            ),
-            TextButton(onPressed: restart, child: const Text('إعادة الجولة')),
-            Text(
-              'هذه الجلسة: ' +
-                  arNumber(correctCount) +
-                  ' صحيحة • أفضل نتيجة عامة: ' +
-                  arNumber(stats.bestScore),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70),
-            ),
-          ],
         ],
       ),
+      Text(
+        'النقاط ' +
+            arNumber(score) +
+            ' • السلسلة ' +
+            arNumber(streak) +
+            ' • الأفضل ' +
+            arNumber(bestSessionStreak),
+        style: const TextStyle(color: Colors.white),
+      ),
+      const SizedBox(height: 12),
+    ];
+
+    if (paused) {
+      children.add(
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: FilledButton.icon(
+              onPressed: () => setState(() => paused = false),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('استئناف اللعبة'),
+            ),
+          ),
+        ),
+      );
+    } else {
+      children.addAll([
+        Card(
+          color: const Color(0xFF111111),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Text(
+              current.text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        ...List.generate(
+          current.options.length,
+          (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 9),
+            child: FilledButton.tonal(
+              onPressed: picked == null ? () => answer(i) : null,
+              child: Text(
+                current.options[i],
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+        if (picked != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              picked == current.answer
+                  ? 'إجابة صحيحة • +' + arNumber(earned) + ' نقطة'
+                  : 'إجابة غير صحيحة',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        const SizedBox(height: 8),
+        FilledButton(
+          onPressed: picked == null ? null : next,
+          child: const Text('السؤال التالي'),
+        ),
+        TextButton(
+          onPressed: restart,
+          child: const Text('إعادة الجولة'),
+        ),
+        Text(
+          'هذه الجلسة: ' +
+              arNumber(correctCount) +
+              ' صحيحة • أفضل نتيجة عامة: ' +
+              arNumber(stats.bestScore),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white70),
+        ),
+      ]);
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(18),
+      children: children,
     );
   }
 }

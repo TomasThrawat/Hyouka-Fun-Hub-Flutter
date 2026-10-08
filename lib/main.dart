@@ -548,109 +548,137 @@ class _BattleState extends State<BattleGame> {
   @override
   Widget build(BuildContext context) {
     if (gameOver) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.flag, size: 72),
-              const SizedBox(height: 16),
-              const Text(
-                'انتهت المعركة',
-                style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'النتيجة ' + arNumber(score) + ' • الصحيحة ' + arNumber(correctCount) + ' • أفضل سلسلة ' + arNumber(bestCombo),
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                onPressed: restart,
-                icon: const Icon(Icons.refresh),
-                label: const Text('ابدأ من جديد'),
-              ),
-            ],
+      return ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 40),
+          const Icon(Icons.flag, size: 72),
+          const SizedBox(height: 16),
+          const Text(
+            'انتهت المعركة',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
+          const SizedBox(height: 10),
+          Text(
+            'النتيجة ' +
+                arNumber(score) +
+                ' • الصحيحة ' +
+                arNumber(correctCount) +
+                ' • أفضل سلسلة ' +
+                arNumber(bestCombo),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white),
+          ),
+          const SizedBox(height: 20),
+          FilledButton.icon(
+            onPressed: restart,
+            icon: const Icon(Icons.refresh),
+            label: const Text('ابدأ من جديد'),
+          ),
+        ],
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    final children = <Widget>[
+      Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'الوقت ' + arNumber(sec) + ' • السؤال ' + arNumber(questionNumber),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-                ),
+          Expanded(
+            child: Text(
+              'الوقت ' +
+                  arNumber(sec) +
+                  ' • السؤال ' +
+                  arNumber(questionNumber),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
               ),
-              IconButton(
-                tooltip: paused ? 'استئناف' : 'إيقاف مؤقت',
-                onPressed: () => setState(() => paused = !paused),
-                icon: Icon(paused ? Icons.play_arrow : Icons.pause),
-              ),
-            ],
+            ),
           ),
-          Text(
-            'النقاط ' + arNumber(score) + ' • السلسلة ' + arNumber(combo) + ' • ' + questionDifficultyLabel(current.difficulty),
-            style: const TextStyle(color: Colors.white),
+          IconButton(
+            tooltip: paused ? 'استئناف' : 'إيقاف مؤقت',
+            onPressed: () => setState(() => paused = !paused),
+            icon: Icon(paused ? Icons.play_arrow : Icons.pause),
           ),
-          const SizedBox(height: 14),
-          if (paused)
-            Expanded(
-              child: Center(
-                child: FilledButton.icon(
-                  onPressed: () => setState(() => paused = false),
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('استئناف المعركة'),
-                ),
-              ),
-            )
-          else ...[
-            Card(
-              color: const Color(0xFF111111),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Text(
-                  current.text,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...List.generate(
-              current.options.length,
-              (i) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: FilledButton.tonal(
-                  onPressed: picked == null ? () => answer(i) : null,
-                  child: Text(current.options[i]),
-                ),
-              ),
-            ),
-            const Spacer(),
-            if (picked != null)
-              Text(
-                picked == current.answer ? 'إصابة صحيحة' : 'إجابة خاطئة',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-              ),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: picked == null ? null : next,
-              child: const Text('التالي'),
-            ),
-          ],
         ],
       ),
+      Text(
+        'النقاط ' +
+            arNumber(score) +
+            ' • السلسلة ' +
+            arNumber(combo) +
+            ' • ' +
+            questionDifficultyLabel(current.difficulty),
+        style: const TextStyle(color: Colors.white),
+      ),
+      const SizedBox(height: 14),
+    ];
+
+    if (paused) {
+      children.add(
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: FilledButton.icon(
+              onPressed: () => setState(() => paused = false),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('استئناف المعركة'),
+            ),
+          ),
+        ),
+      );
+    } else {
+      children.addAll([
+        Card(
+          color: const Color(0xFF111111),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Text(
+              current.text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 23,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...List.generate(
+          current.options.length,
+          (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: FilledButton.tonal(
+              onPressed: picked == null ? () => answer(i) : null,
+              child: Text(current.options[i]),
+            ),
+          ),
+        ),
+        if (picked != null)
+          Text(
+            picked == current.answer ? 'إصابة صحيحة' : 'إجابة خاطئة',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        const SizedBox(height: 8),
+        FilledButton(
+          onPressed: picked == null ? null : next,
+          child: const Text('التالي'),
+        ),
+      ]);
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(18),
+      children: children,
     );
   }
 }
