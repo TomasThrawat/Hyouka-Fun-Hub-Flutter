@@ -255,23 +255,488 @@ class _StoryState extends State<StoryGame>{int i=0;final s=const['محطة مه�
 class DetectiveGame extends StatefulWidget{const DetectiveGame({super.key});@override State<DetectiveGame>createState()=>_DetectiveState();}
 class _DetectiveState extends State<DetectiveGame>{String msg='';void solve(String x)=>setState(()=>msg=x=='Mina'?'صح.':'غلط. راجع التوقيت.');@override Widget build(BuildContext c)=>Padding(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[const Text('Case 07',style:TextStyle(fontSize:28,fontWeight:FontWeight.w900)),const Text('الاختفاء بين 19:10 و19:30. استخدم سجل الرسائل والكاميرا.'),const Spacer(),Text(msg,textAlign:TextAlign.center),...['Alex','Mina','Omar'].map((x)=>Padding(padding:const EdgeInsets.only(bottom:8),child:FilledButton.tonal(onPressed:()=>solve(x),child:Text('Suspect: '+x))))]));}
 
-class BattleGame extends StatefulWidget{const BattleGame({super.key});@override State<BattleGame>createState()=>_BattleState();}
-class _BattleState extends State<BattleGame>{int sec=30,score=0,combo=0,i=0;int?pick;Timer?timer;@override void initState(){super.initState();timer=Timer.periodic(const Duration(seconds:1),(_){if(!mounted)return;setState(()=>sec=max(0,sec-1));});}@override void dispose(){timer?.cancel();super.dispose();}@override Widget build(BuildContext c){final q=trivia[i];return Padding(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[Text('Time '+sec.toString()),Text('Combo x'+combo.toString()),Text('Score '+score.toString())]),const SizedBox(height:18),Text(q.text,style:const TextStyle(fontSize:24,fontWeight:FontWeight.w900)),const SizedBox(height:12),...List.generate(q.options.length,(n)=>Padding(padding:const EdgeInsets.only(bottom:8),child:FilledButton.tonal(onPressed:pick!=null||sec==0?null:()=>setState((){pick=n;if(n==q.answer){combo++;score+=10+combo;}else combo=0;}),child:Text(q.options[n])))),const Spacer(),FilledButton(onPressed:pick==null?null:()=>setState((){i=(i+1)%trivia.length;pick=null;}),child:const Text('Next'))]);}}
+class BattleGame extends StatefulWidget {
+  const BattleGame({super.key});
+  @override State<BattleGame> createState() => _BattleState();
+}
+class _BattleState extends State<BattleGame> {
+  int sec = 30, score = 0, combo = 0, index = 0;
+  int? picked;
+  Timer? timer;
 
-class MemoryGame extends StatefulWidget{const MemoryGame({super.key});@override State<MemoryGame>createState()=>_MemoryState();}
-class _MemoryState extends State<MemoryGame>{final rng=Random();List<int> seq=[],input=[];bool show=false;int level=1;String msg='Start';Future<void>start()async{seq=List.generate(level+2,(_)=>rng.nextInt(4));input=[];setState((){show=true;msg='Watch';});for(final v in seq){await Future.delayed(const Duration(milliseconds:450));if(!mounted)return;setState(()=>input=[v]);await Future.delayed(const Duration(milliseconds:250));if(!mounted)return;setState(()=>input=[]);}if(mounted)setState((){show=false;msg='Repeat';});}void tap(int v){if(show||seq.isEmpty)return;final n=input.length;setState((){if(n>=seq.length||seq[n]!=v){level=1;input=[];msg='Wrong';}else{input=[...input,v];if(input.length==seq.length){level++;input=[];msg='Perfect';}}});}@override Widget build(BuildContext c)=>Column(children:[const SizedBox(height:12),Text('Level '+level.toString(),style:const TextStyle(fontSize:25,fontWeight:FontWeight.w900)),Text(msg),Expanded(child:GridView.count(crossAxisCount:2,padding:const EdgeInsets.all(24),crossAxisSpacing:14,mainAxisSpacing:14,children:List.generate(4,(i)=>GestureDetector(onTap:()=>tap(i),child:Container(decoration:BoxDecoration(color:input.contains(i)?Colors.white:const Color(0xFF222222),borderRadius:BorderRadius.circular(22))))))),FilledButton(onPressed:show?null:start,child:const Text('Start'))]);}
+  @override void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => sec = max(0, sec - 1));
+    });
+  }
+  @override void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+  void answer(int n) {
+    final q = trivia[index];
+    setState(() {
+      picked = n;
+      if (n == q.answer) {
+        combo++;
+        score += 10 + combo;
+      } else {
+        combo = 0;
+      }
+    });
+  }
+  @override Widget build(BuildContext context) {
+    final q = trivia[index];
+    return Padding(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [Text('Time $sec'), Text('Combo x$combo'), Text('Score $score')],
+          ),
+          const SizedBox(height: 18),
+          Text(q.text, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 12),
+          for (int n = 0; n < q.options.length; n++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: FilledButton.tonal(
+                onPressed: picked != null || sec == 0 ? null : () => answer(n),
+                child: Text(q.options[n]),
+              ),
+            ),
+          const Spacer(),
+          FilledButton(
+            onPressed: picked == null ? null : () {
+              setState(() {
+                index = (index + 1) % trivia.length;
+                picked = null;
+              });
+            },
+            child: const Text('Next'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-class SnakeGame extends StatefulWidget{const SnakeGame({super.key});@override State<SnakeGame>createState()=>_SnakeState();}
-class _SnakeState extends State<SnakeGame>{static const n=12;final r=Random();List<Point<int>>snake=[const Point(5,6),const Point(4,6),const Point(3,6)];Point<int>food=const Point(9,6),dir=const Point(1,0);Timer?timer;bool over=false;@override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:180),(_)=>tick());}@override void dispose(){timer?.cancel();super.dispose();}void turn(Point<int>d){if(dir.x+d.x==0&&dir.y+d.y==0)return;dir=d;}void tick(){if(over||!mounted)return;final h=snake.first,next=Point(h.x+dir.x,h.y+dir.y);if(next.x<0||next.y<0||next.x>=n||next.y>=n||snake.contains(next)){setState(()=>over=true);return;}final ns=[next,...snake];if(next==food){do{food=Point(r.nextInt(n),r.nextInt(n));}while(ns.contains(food));}else ns.removeLast();setState(()=>snake=ns);}void reset()=>setState((){snake=[const Point(5,6),const Point(4,6),const Point(3,6)];food=Point(r.nextInt(n),r.nextInt(n));dir=const Point(1,0);over=false;});@override Widget build(BuildContext c)=>Column(children:[Expanded(child:Center(child:AspectRatio(aspectRatio:1,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:n),itemCount:n*n,itemBuilder:(_,i){final p=Point(i%n,i~/n);return Container(margin:const EdgeInsets.all(1),color:p==food?Colors.white:snake.contains(p)?Colors.white70:const Color(0xFF111111));})))),if(over)const Text('Game Over',style:TextStyle(fontSize:22,fontWeight:FontWeight.w900)),Wrap(children:[IconButton(onPressed:()=>turn(const Point(0,-1)),icon:const Icon(Icons.keyboard_arrow_up)),IconButton(onPressed:()=>turn(const Point(-1,0)),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:()=>turn(const Point(1,0)),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:()=>turn(const Point(0,1)),icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh))])]);}
+class MemoryGame extends StatefulWidget {
+  const MemoryGame({super.key});
+  @override State<MemoryGame> createState() => _MemoryState();
+}
+class _MemoryState extends State<MemoryGame> {
+  final Random random = Random();
+  List<int> sequence = [];
+  List<int> input = [];
+  int level = 1;
+  bool showing = false;
+  String message = 'Start';
 
-class Game2048 extends StatefulWidget{const Game2048({super.key});@override State<Game2048>createState()=>_2048State();}
-class _2048State extends State<Game2048>{final r=Random();List<int>b=List.filled(16,0);int score=0;@override void initState(){super.initState();reset();}void reset(){b=List.filled(16,0);score=0;spawn();spawn();setState((){});}void spawn(){final e=[for(int i=0;i<16;i++)if(b[i]==0)i];if(e.isNotEmpty)b[e[r.nextInt(e.length)]]=2;}List<int>line(List<int>x){final a=x.where((v)=>v!=0).toList(),o=<int>[];for(int i=0;i<a.length;i++){if(i+1<a.length&&a[i]==a[i+1]){final v=a[i]*2;o.add(v);score+=v;i++;}else o.add(a[i]);}while(o.length<4)o.add(0);return o;}void move(int d){final old=List<int>.from(b);for(int z=0;z<4;z++){List<int>l;if(d<2)l=[for(int r0=0;r0<4;r0++)b[r0*4+z]];else l=b.sublist(z*4,z*4+4);final rev=(d==1||d==3);if(rev)l=l.reversed.toList();l=line(l);if(rev)l=l.reversed.toList();if(d<2)for(int r0=0;r0<4;r0++)b[r0*4+z]=l[r0];else b.replaceRange(z*4,z*4+4,l);}if(old.toString()!=b.toString())spawn();setState((){});} @override Widget build(BuildContext c)=>Column(children:[const SizedBox(height:12),Text('Score: '+score.toString()),Expanded(child:Center(child:AspectRatio(aspectRatio:1,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:4,crossAxisSpacing:6,mainAxisSpacing:6),itemCount:16,itemBuilder:(_,i)=>Container(color:b[i]==0?const Color(0xFF111111):Colors.white,child:Center(child:Text(b[i]==0?'':b[i].toString(),style:TextStyle(color:b[i]==0?Colors.white:Colors.black,fontWeight:FontWeight.w900,fontSize:21))))))),Wrap(children:[IconButton(onPressed:()=>move(0),icon:const Icon(Icons.keyboard_arrow_up)),IconButton(onPressed:()=>move(2),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:()=>move(3),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:()=>move(1),icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh))])]);}
+  Future<void> startGame() async {
+    sequence = List.generate(level + 2, (_) => random.nextInt(4));
+    input = [];
+    setState(() {
+      showing = true;
+      message = 'Watch';
+    });
+    for (final value in sequence) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+      setState(() => input = [value]);
+      await Future.delayed(const Duration(milliseconds: 250));
+      if (!mounted) return;
+      setState(() => input = []);
+    }
+    if (mounted) {
+      setState(() {
+        showing = false;
+        input = [];
+        message = 'Repeat';
+      });
+    }
+  }
 
-class TetrisGame extends StatefulWidget{const TetrisGame({super.key});@override State<TetrisGame>createState()=>_TetrisState();}
-class _TetrisState extends State<TetrisGame>{Timer?timer;int y=0,x=3,score=0;List<int>cells=List.filled(128,0);@override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:450),(_)=>fall());}@override void dispose(){timer?.cancel();super.dispose();}void fall(){if(y<15){setState(()=>y++);}else{setState((){cells[15*8+x]=1;y=0;});}}void reset(){setState((){cells=List.filled(128,0);y=0;x=3;score=0;});}@override Widget build(BuildContext c)=>Column(children:[Expanded(child:Center(child:AspectRatio(aspectRatio:0.5,child:GridView.builder(physics:const NeverScrollableScrollPhysics(),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:8),itemCount:128,itemBuilder:(_,i){final cx=i%8,cy=i~/8;return Container(margin:const EdgeInsets.all(1),color:(cx==x&&cy==y)||cells[i]!=0?Colors.white:const Color(0xFF111111));})))),Text('Score: '+score.toString()),Row(mainAxisAlignment:MainAxisAlignment.center,children:[IconButton(onPressed:()=>setState(()=>x=max(0,x-1)),icon:const Icon(Icons.keyboard_arrow_left)),IconButton(onPressed:fall,icon:const Icon(Icons.keyboard_arrow_down)),IconButton(onPressed:()=>setState(()=>x=min(7,x+1)),icon:const Icon(Icons.keyboard_arrow_right)),IconButton(onPressed:reset,icon:const Icon(Icons.refresh))])]);}
+  void tap(int value) {
+    if (showing || sequence.isEmpty) return;
+    final i = input.length;
+    if (i >= sequence.length || sequence[i] != value) {
+      setState(() {
+        level = 1;
+        sequence = [];
+        input = [];
+        message = 'Wrong';
+      });
+      return;
+    }
+    setState(() {
+      input = [...input, value];
+      if (input.length == sequence.length) {
+        level++;
+        sequence = [];
+        input = [];
+        message = 'Perfect';
+      }
+    });
+  }
 
-class MinesGame extends StatefulWidget{const MinesGame({super.key});@override State<MinesGame>createState()=>_MinesState();}
-class _MinesState extends State<MinesGame>{final r=Random();Set<int>m={};List<bool>o=List.filled(64,false);bool over=false;@override void initState(){super.initState();reset();}void reset(){m={};while(m.length<10)m.add(r.nextInt(64));o=List.filled(64,false);over=false;setState((){});}void tap(int i){if(over)return;setState((){o[i]=true;if(m.contains(i))over=true;});}@override Widget build(BuildContext c)=>Column(children:[Text(over?'Boom':'Minesweeper',style:const TextStyle(fontSize:22,fontWeight:FontWeight.w900)),Expanded(child:GridView.builder(padding:const EdgeInsets.all(18),gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:8,crossAxisSpacing:4,mainAxisSpacing:4),itemCount:64,itemBuilder:(_,i)=>InkWell(onTap:()=>tap(i),child:Container(color:over&&m.contains(i)?const Color(0xFF552222):o[i]?Colors.white:const Color(0xFF181818),child:Center(child:Text(over&&m.contains(i)?'×':o[i]?'•':'',style:TextStyle(color:o[i]&&!m.contains(i)?Colors.black:Colors.white))))))),FilledButton(onPressed:reset,child:const Text('Reset'))]);}
+  @override Widget build(BuildContext context) => Column(
+    children: [
+      const SizedBox(height: 12),
+      Text('Level $level', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900)),
+      Text(message),
+      Expanded(
+        child: GridView.count(
+          crossAxisCount: 2,
+          padding: const EdgeInsets.all(24),
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+          children: List.generate(
+            4,
+            (i) => GestureDetector(
+              onTap: () => tap(i),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: input.contains(i) ? Colors.white : const Color(0xFF222222),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      FilledButton(onPressed: showing ? null : startGame, child: const Text('Start')),
+    ],
+  );
+}
+
+class SnakeGame extends StatefulWidget {
+  const SnakeGame({super.key});
+  @override State<SnakeGame> createState() => _SnakeState();
+}
+class _SnakeState extends State<SnakeGame> {
+  static const int size = 12;
+  final Random random = Random();
+  List<Point<int>> snake = const [Point(5, 6), Point(4, 6), Point(3, 6)];
+  Point<int> food = const Point(9, 6);
+  Point<int> direction = const Point(1, 0);
+  Timer? timer;
+  bool over = false;
+
+  @override void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(milliseconds: 180), (_) => tick());
+  }
+  @override void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+  void turn(Point<int> next) {
+    if (direction.x + next.x == 0 && direction.y + next.y == 0) return;
+    direction = next;
+  }
+  void tick() {
+    if (over || !mounted) return;
+    final head = snake.first;
+    final next = Point(head.x + direction.x, head.y + direction.y);
+    if (next.x < 0 || next.y < 0 || next.x >= size || next.y >= size || snake.contains(next)) {
+      setState(() => over = true);
+      return;
+    }
+    final nextSnake = [next, ...snake];
+    if (next == food) {
+      do {
+        food = Point(random.nextInt(size), random.nextInt(size));
+      } while (nextSnake.contains(food));
+    } else {
+      nextSnake.removeLast();
+    }
+    setState(() => snake = nextSnake);
+  }
+  void reset() {
+    setState(() {
+      snake = const [Point(5, 6), Point(4, 6), Point(3, 6)];
+      food = Point(random.nextInt(size), random.nextInt(size));
+      direction = const Point(1, 0);
+      over = false;
+    });
+  }
+  @override Widget build(BuildContext context) => Column(
+    children: [
+      Expanded(
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: size),
+              itemCount: size * size,
+              itemBuilder: (_, i) {
+                final p = Point(i % size, i ~/ size);
+                return Container(
+                  margin: const EdgeInsets.all(1),
+                  color: p == food
+                      ? Colors.white
+                      : snake.contains(p)
+                          ? Colors.white70
+                          : const Color(0xFF111111),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      if (over) const Text('Game Over', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+      Wrap(
+        children: [
+          IconButton(onPressed: () => turn(const Point(0, -1)), icon: const Icon(Icons.keyboard_arrow_up)),
+          IconButton(onPressed: () => turn(const Point(-1, 0)), icon: const Icon(Icons.keyboard_arrow_left)),
+          IconButton(onPressed: () => turn(const Point(1, 0)), icon: const Icon(Icons.keyboard_arrow_right)),
+          IconButton(onPressed: () => turn(const Point(0, 1)), icon: const Icon(Icons.keyboard_arrow_down)),
+          IconButton(onPressed: reset, icon: const Icon(Icons.refresh)),
+        ],
+      ),
+    ],
+  );
+}
+
+class Game2048 extends StatefulWidget {
+  const Game2048({super.key});
+  @override State<Game2048> createState() => _Game2048State();
+}
+class _Game2048State extends State<Game2048> {
+  final Random random = Random();
+  List<int> board = List.filled(16, 0);
+  int score = 0;
+
+  @override void initState() {
+    super.initState();
+    reset();
+  }
+  void reset() {
+    board = List.filled(16, 0);
+    score = 0;
+    spawn();
+    spawn();
+    setState(() {});
+  }
+  void spawn() {
+    final empty = [for (int i = 0; i < 16; i++) if (board[i] == 0) i];
+    if (empty.isNotEmpty) board[empty[random.nextInt(empty.length)]] = random.nextInt(10) == 0 ? 4 : 2;
+  }
+  List<int> merge(List<int> values) {
+    final compact = values.where((v) => v != 0).toList();
+    final result = <int>[];
+    for (int i = 0; i < compact.length; i++) {
+      if (i + 1 < compact.length && compact[i] == compact[i + 1]) {
+        final value = compact[i] * 2;
+        result.add(value);
+        score += value;
+        i++;
+      } else {
+        result.add(compact[i]);
+      }
+    }
+    while (result.length < 4) result.add(0);
+    return result;
+  }
+  void move(int direction) {
+    final old = List<int>.from(board);
+    for (int line = 0; line < 4; line++) {
+      var values = direction < 2
+          ? [for (int row = 0; row < 4; row++) board[row * 4 + line]]
+          : board.sublist(line * 4, line * 4 + 4);
+      final reverse = direction == 1 || direction == 3;
+      if (reverse) values = values.reversed.toList();
+      values = merge(values);
+      if (reverse) values = values.reversed.toList();
+      if (direction < 2) {
+        for (int row = 0; row < 4; row++) board[row * 4 + line] = values[row];
+      } else {
+        board.replaceRange(line * 4, line * 4 + 4, values);
+      }
+    }
+    if (!_same(old, board)) spawn();
+    setState(() {});
+  }
+  bool _same(List<int> a, List<int> b) {
+    for (int i = 0; i < a.length; i++) if (a[i] != b[i]) return false;
+    return true;
+  }
+  @override Widget build(BuildContext context) => Column(
+    children: [
+      const SizedBox(height: 12),
+      Text('Score: $score'),
+      Expanded(
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 6, mainAxisSpacing: 6),
+              itemCount: 16,
+              itemBuilder: (_, i) => Container(
+                color: board[i] == 0 ? const Color(0xFF111111) : Colors.white,
+                child: Center(
+                  child: Text(
+                    board[i] == 0 ? '' : board[i].toString(),
+                    style: TextStyle(color: board[i] == 0 ? Colors.white : Colors.black, fontWeight: FontWeight.w900, fontSize: 21),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      Wrap(
+        children: [
+          IconButton(onPressed: () => move(0), icon: const Icon(Icons.keyboard_arrow_up)),
+          IconButton(onPressed: () => move(2), icon: const Icon(Icons.keyboard_arrow_left)),
+          IconButton(onPressed: () => move(3), icon: const Icon(Icons.keyboard_arrow_right)),
+          IconButton(onPressed: () => move(1), icon: const Icon(Icons.keyboard_arrow_down)),
+          IconButton(onPressed: reset, icon: const Icon(Icons.refresh)),
+        ],
+      ),
+    ],
+  );
+}
+
+class TetrisGame extends StatefulWidget {
+  const TetrisGame({super.key});
+  @override State<TetrisGame> createState() => _TetrisState();
+}
+class _TetrisState extends State<TetrisGame> {
+  static const int columns = 8;
+  static const int rows = 16;
+  Timer? timer;
+  int x = 3, y = 0, score = 0;
+  List<int> cells = List.filled(columns * rows, 0);
+
+  @override void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(milliseconds: 450), (_) => fall());
+  }
+  @override void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+  void fall() {
+    if (y < rows - 1) {
+      setState(() => y++);
+    } else {
+      setState(() {
+        cells[(rows - 1) * columns + x] = 1;
+        y = 0;
+        score++;
+      });
+    }
+  }
+  void reset() {
+    setState(() {
+      cells = List.filled(columns * rows, 0);
+      x = 3;
+      y = 0;
+      score = 0;
+    });
+  }
+  @override Widget build(BuildContext context) => Column(
+    children: [
+      Expanded(
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: columns / rows,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns),
+              itemCount: cells.length,
+              itemBuilder: (_, i) {
+                final cx = i % columns, cy = i ~/ columns;
+                final falling = cx == x && cy == y;
+                return Container(
+                  margin: const EdgeInsets.all(1),
+                  color: falling || cells[i] != 0 ? Colors.white : const Color(0xFF111111),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      Text('Score: $score'),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(onPressed: () => setState(() => x = max(0, x - 1)), icon: const Icon(Icons.keyboard_arrow_left)),
+          IconButton(onPressed: fall, icon: const Icon(Icons.keyboard_arrow_down)),
+          IconButton(onPressed: () => setState(() => x = min(columns - 1, x + 1)), icon: const Icon(Icons.keyboard_arrow_right)),
+          IconButton(onPressed: reset, icon: const Icon(Icons.refresh)),
+        ],
+      ),
+    ],
+  );
+}
+
+class MinesGame extends StatefulWidget {
+  const MinesGame({super.key});
+  @override State<MinesGame> createState() => _MinesState();
+}
+class _MinesState extends State<MinesGame> {
+  final Random random = Random();
+  Set<int> mines = {};
+  List<bool> opened = List.filled(64, false);
+  bool over = false;
+
+  @override void initState() {
+    super.initState();
+    reset();
+  }
+  void reset() {
+    setState(() {
+      mines = {};
+      while (mines.length < 10) mines.add(random.nextInt(64));
+      opened = List.filled(64, false);
+      over = false;
+    });
+  }
+  void tap(int index) {
+    if (over || opened[index]) return;
+    setState(() {
+      opened[index] = true;
+      if (mines.contains(index)) over = true;
+    });
+  }
+  @override Widget build(BuildContext context) => Column(
+    children: [
+      Text(over ? 'Boom' : 'Minesweeper', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+      Expanded(
+        child: GridView.builder(
+          padding: const EdgeInsets.all(18),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 4, mainAxisSpacing: 4),
+          itemCount: 64,
+          itemBuilder: (_, i) => InkWell(
+            onTap: () => tap(i),
+            child: Container(
+              color: over && mines.contains(i)
+                  ? const Color(0xFF552222)
+                  : opened[i]
+                      ? Colors.white
+                      : const Color(0xFF181818),
+              child: Center(
+                child: Text(
+                  over && mines.contains(i) ? '×' : opened[i] ? '•' : '',
+                  style: TextStyle(color: opened[i] && !mines.contains(i) ? Colors.black : Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      FilledButton(onPressed: reset, child: const Text('Reset')),
+    ],
+  );
+}
 
 class PongGame extends StatefulWidget{const PongGame({super.key});@override State<PongGame>createState()=>_PongState();}
 class _PongState extends State<PongGame>{double paddle=.5,bx=.5,by=.5,vx=.008,vy=.009;int score=0;Timer?timer;@override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:30),(_){if(!mounted)return;setState((){bx+=vx;by+=vy;if(bx<.02||bx>.98)vx=-vx;if(by<.02)vy=vy.abs();if(by>.92){if((bx-paddle).abs()<.16){vy=-vy.abs();score++;}else{bx=.5;by=.5;}}});});}@override void dispose(){timer?.cancel();super.dispose();}@override Widget build(BuildContext c)=>Column(children:[Text('Score: '+score.toString()),Expanded(child:GestureDetector(onHorizontalDragUpdate:(d)=>setState(()=>paddle=(paddle+d.delta.dx/280).clamp(.12,.88)),child:CustomPaint(painter:PongPainter(bx,by,paddle),child:const SizedBox.expand()))),const Text('اسحب المضرب')]);}
@@ -310,8 +775,50 @@ class _MazeState extends State<MazeGame>{Point<int>p=const Point(0,0);final bloc
 class RandomFunGame extends StatefulWidget{const RandomFunGame({super.key});@override State<RandomFunGame>createState()=>_RandomFunState();}
 class _RandomFunState extends State<RandomFunGame>{final r=Random();String prompt='اضغط Random';final list=const['اكتب 5 كلمات بنفس الحرف','جاوب trivia في 5 ثواني','احفظ 6 أرقام','خمن شخصية من 3 clues','اكتشف سر القضية الجديدة'];@override Widget build(BuildContext c)=>Center(child:Padding(padding:const EdgeInsets.all(25),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[Text(prompt,textAlign:TextAlign.center,style:const TextStyle(fontSize:27,fontWeight:FontWeight.w900)),const SizedBox(height:20),FilledButton(onPressed:()=>setState(()=>prompt=list[r.nextInt(list.length)]),child:const Text('Random Challenge'))])));}
 
-class FakeTerminalGame extends StatefulWidget{const FakeTerminalGame({super.key});@override State<FakeTerminalGame>createState()=>_TerminalState();}
-class _TerminalState extends State<FakeTerminalGame>{final c=TextEditingController();final lines=<String>['HYOUKA SIM TERMINAL','sandbox ready'];void run(){final x=c.text.trim();if(x.isEmpty)return;setState((){lines.add('> '+x);lines.add(['ACCESS CHECK: PASS','SIMULATION COMPLETE','NO REAL SYSTEM ACTION'][Random().nextInt(3)]);c.clear();});}@override void dispose(){c.dispose();super.dispose();}@override Widget build(BuildContext cxt)=>Padding(padding:const EdgeInsets.all(14),child:Column(children:[Expanded(child(Container(color:const Color(0xFF080808),padding:const EdgeInsets.all(12),child:ListView(children:lines.map((x)=>Text(x,style:const TextStyle(fontFamily:'monospace'))).toList())))),Row(children:[Expanded(child:TextField(controller:c)),IconButton(onPressed:run,icon:const Icon(Icons.send))])]);}
+class FakeTerminalGame extends StatefulWidget {
+  const FakeTerminalGame({super.key});
+  @override State<FakeTerminalGame> createState() => _TerminalState();
+}
+class _TerminalState extends State<FakeTerminalGame> {
+  final TextEditingController controller = TextEditingController();
+  final List<String> lines = ['HYOUKA SIM TERMINAL', 'sandbox ready'];
+
+  void runCommand() {
+    final command = controller.text.trim();
+    if (command.isEmpty) return;
+    setState(() {
+      lines.add('> $command');
+      lines.add(const ['ACCESS CHECK: PASS', 'SIMULATION COMPLETE', 'NO REAL SYSTEM ACTION'][0]);
+      controller.clear();
+    });
+  }
+  @override void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+  @override Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(14),
+    child: Column(
+      children: [
+        Expanded(
+          child: Container(
+            color: const Color(0xFF080808),
+            padding: const EdgeInsets.all(12),
+            child: ListView(
+              children: lines.map((line) => Text(line, style: const TextStyle(fontFamily: 'monospace'))).toList(),
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(child: TextField(controller: controller)),
+            IconButton(onPressed: runCommand, icon: const Icon(Icons.send)),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
 class EscapeGame extends StatefulWidget{const EscapeGame({super.key});@override State<EscapeGame>createState()=>_EscapeState();}
 class _EscapeState extends State<EscapeGame>{final c=TextEditingController();String msg='Find the code: 3142';void unlock()=>setState(()=>msg=c.text.trim()=='3142'?'Unlocked!':'Wrong code');@override void dispose(){c.dispose();super.dispose();}@override Widget build(BuildContext cxt)=>Center(child:Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[const Icon(Icons.lock,size:70),const Text('Escape Room',style:TextStyle(fontSize:30,fontWeight:FontWeight.w900)),Text(msg),TextField(controller:c,keyboardType:TextInputType.number),FilledButton(onPressed:unlock,child:const Text('Unlock'))])));}
