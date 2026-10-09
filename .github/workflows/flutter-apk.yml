@@ -1,46 +1,28 @@
-name: Flutter Android APK
+name: Shared Flutter CI
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Configure Git default branch
-        run: git config --global init.defaultBranch main
-      - name: Checkout
-        uses: actions/checkout@v7
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - name: Flutter version
-        run: flutter --version
-      - name: Generate Android platform
-        run: flutter create --platforms=android --project-name hyouka_fun_hub .
-      - name: Pub get
-        run: flutter pub get
-      - name: Apply Dart fixes
-        run: dart fix --apply
-      - name: Format Dart
-        run: dart format --output=write lib test
-      - name: Analyze
-        run: flutter analyze
-      - name: Test
-        run: flutter test
-      - name: Build ARM64 APK
-        run: flutter build apk --release --target-platform android-arm64
-      - name: Upload APK
-        uses: actions/upload-artifact@v7
-        with:
-          name: hyouka-fun-hub-arm64-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
-          retention-days: 14
+  shared-ci:
+    uses: TomasThrawat/hyouka-flutter-workflows/.github/workflows/flutter-ci.yml@v1
+    with:
+      flutter-channel: stable
+      run-analyze: true
+      run-tests: true
+      check-format: false
+      build-apk: true
+      target-platform: android-arm64
+      generate-android: true
+      android-project-name: hyouka_fun_hub
+      android-organization: com.example
+      run-emulator-tests: false
+      run-security-audit: true
+      fail-on-security-findings: false
+      artifact-name: hyouka-fun-hub-arm64-apk
