@@ -700,7 +700,12 @@ class _MemoryState extends State<MemoryGame>{
       await Future.delayed(const Duration(milliseconds:250));
       if(!mounted)return;setState(()=>input=[]);
     }
-    if(mounted)setState(()=>{showing=false,message='كرر التسلسل';});
+    if (mounted) {
+      setState(() {
+        showing = false;
+        message = 'كرر التسلسل';
+      });
+    }
   }
   void tap(int value){
     if(showing||sequence.isEmpty)return;
